@@ -36,26 +36,26 @@ const INIT = {
     { id:8, "사이트명":"수강신청", "URL":"https://for-s.seoultech.ac.kr", "카테고리":"수강신청", "아이콘":"📋" },
   ],
   exams: [
-    { id:1, "시험명":"알고리즘 중간고사", "강의명":"알고리즘", "시험 구분":"중간고사", "시험 범위":"1~5장", "일시":"2026-04-10" },
-    { id:2, "시험명":"공학수학 퀴즈", "강의명":"공학수학", "시험 구분":"퀴즈", "시험 범위":"미분방정식", "일시":"2026-03-26" },
+    { id:1, "시험명":"알고리즘 중간고사", "강의명":"알고리즘", "시험 구분":"중간고사", "시험 범위":"1~5장", "일시":"2026-04-10", "반복":"없음" },
+    { id:2, "시험명":"공학수학 퀴즈", "강의명":"공학수학", "시험 구분":"퀴즈", "시험 범위":"미분방정식", "일시":"2026-03-26", "반복":"없음" },
   ],
   specs: [
-    { id:1, "스펙명":"TOEIC", "카테고리":"공인 시험", "현재 점수":"820", "목표 점수":"900", "상태":"준비 중" },
+    { id:1, "스펙명":"TOEIC", "카테고리":"공인 시험", "현재 점수":"820", "목표 점수":"900", "상태":"준비 중", "메모":"" },
   ],
   people: [
-    { id:1, "이름":"김○○ 교수님", "구분":"교수님", "이메일":"prof.kim@seoultech.ac.kr", "위치":"창의관 514" },
+    { id:1, "이름":"김○○ 교수님", "구분":"교수님", "이메일":"prof.kim@seoultech.ac.kr", "위치":"창의관 514", "전화번호":"", "메모":"" },
   ],
   records: [
-    { id:1, "제목":"인터스텔라", "카테고리":"🎬 영화", "별점":"⭐⭐⭐⭐⭐", "한줄 감상":"역대급 SF" },
-    { id:2, "제목":"을지로 노포 순대국", "카테고리":"🍜 맛집", "별점":"⭐⭐⭐⭐", "한줄 감상":"가성비 최고" },
+    { id:1, "제목":"인터스텔라", "카테고리":"🎬 영화", "별점":"⭐⭐⭐⭐⭐", "한줄 감상":"역대급 SF", "링크":"", "메모":"" },
+    { id:2, "제목":"을지로 노포 순대국", "카테고리":"🍜 맛집", "별점":"⭐⭐⭐⭐", "한줄 감상":"가성비 최고", "링크":"", "메모":"" },
   ],
   buckets: [
-    { id:1, "항목":"교환학생 가기", "카테고리":"경험", "시즌":"재학 중", "완료":false },
-    { id:2, "항목":"TOEIC 900 달성", "카테고리":"스펙", "시즌":"여름방학", "완료":false },
-    { id:3, "항목":"자전거로 한강 완주", "카테고리":"경험", "시즌":"여름방학", "완료":true },
+    { id:1, "항목":"교환학생 가기", "카테고리":"경험", "시즌":"재학 중", "완료":false, "메모":"" },
+    { id:2, "항목":"TOEIC 900 달성", "카테고리":"스펙", "시즌":"여름방학", "완료":false, "메모":"" },
+    { id:3, "항목":"자전거로 한강 완주", "카테고리":"경험", "시즌":"여름방학", "완료":true, "메모":"" },
   ],
   teamwork: [
-    { id:1, "프로젝트명":"캡스톤 디자인", "상태":"진행 중", "내 역할":"백엔드 개발", "마감일":"2026-06-10" },
+    { id:1, "프로젝트명":"캡스톤 디자인", "상태":"진행 중", "내 역할":"백엔드 개발", "마감일":"2026-06-10", "팀원":"", "메모":"" },
   ],
 }
 
@@ -63,6 +63,8 @@ const today = new Date()
 const DAYS = ["일","월","화","수","목","금","토"]
 const MONTHS = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"]
 const newId = (arr) => (Math.max(0, ...arr.map(x=>x.id)) + 1)
+const thisYear = today.getFullYear()
+const todayStr = today.toISOString().slice(0,10)
 
 function dday(s) {
   if (!s) return null
@@ -73,6 +75,12 @@ function dday(s) {
 function gpa(g) {
   return {"A+":4.5,"A":4.0,"B+":3.5,"B":3.0,"C+":2.5,"C":2.0,"D+":1.5,"D":1.0,"F":0}[g] ?? null
 }
+// yyyy-mm-dd formatter
+function fmtDate(s) {
+  if (!s) return ""
+  return s.slice(0,10)
+}
+
 const CC = [
   {bg:"rgba(124,106,255,0.2)",bl:"#7c6aff",t:"#c4baff"},
   {bg:"rgba(255,106,155,0.2)",bl:"#ff6a9b",t:"#ffb8d1"},
@@ -105,6 +113,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .ct{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+/* timetable */
 .tth{display:grid;grid-template-columns:40px repeat(7,1fr)}
 .ttd{text-align:center;padding:5px 2px;font-size:10px;font-weight:600;color:var(--muted)}
 .ttd.tc{color:var(--accent)}
@@ -112,10 +121,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .ttt{font-size:9px;color:var(--muted);padding:3px 5px 0 0;text-align:right}
 .ttc{border-left:1px solid var(--border);position:relative}
 .ttcls{position:absolute;left:2px;right:2px;border-radius:5px;padding:3px 5px;font-size:9px;font-weight:600;line-height:1.3;overflow:hidden;z-index:1;cursor:pointer}
+/* items */
 .ai{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .ai:last-child{border-bottom:none}
 .sd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .dd{margin-left:auto;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+/* calendar */
+.cal-wrap{display:flex;flex-direction:column}
 .cg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .cdh{text-align:center;font-size:9px;color:var(--muted);padding:3px;font-weight:600}
 .cd{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:3px;font-size:11px;cursor:pointer;transition:background .1s}
@@ -123,13 +135,16 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .cd.td{background:var(--accent);color:#fff;font-weight:700}
 .cd.om{opacity:.2}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--accent2);margin-top:1px}
+/* grades */
 .gw{margin-bottom:9px}
 .gl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
 .gt{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
 .gf{height:100%;border-radius:3px;transition:width 1s ease}
+/* bookmarks */
 .bmg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .bmi{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;position:relative}
 .bmi:hover{border-color:var(--accent);transform:translateY(-2px)}
+/* people/spec/etc rows */
 .pc{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border)}
 .pc:last-child{border-bottom:none}
 .av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
@@ -140,9 +155,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .bi:last-child{border-bottom:none}
 .cb{width:16px;height:16px;border-radius:4px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;cursor:pointer;transition:all .15s}
 .cb.dn{background:var(--success);border-color:var(--success);color:#000}
+/* tabs */
 .tabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:14px;flex-wrap:wrap}
 .tab{padding:4px 11px;border-radius:6px;border:none;cursor:pointer;font-size:11px;font-weight:500;background:transparent;color:var(--muted);transition:all .1s;font-family:'Noto Sans KR',sans-serif}
 .tab.on{background:var(--surface);color:var(--text)}
+/* stat */
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px}
 .sv{font-family:'Syne',sans-serif;font-size:28px;font-weight:700}
 .sl{font-size:11px;color:var(--muted);margin-top:2px}
@@ -150,13 +167,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .ri:last-child{border-bottom:none}
 .empty{text-align:center;padding:28px;color:var(--muted);font-size:12px}
 .ei{font-size:26px;margin-bottom:6px}
+/* modal */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;width:420px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;width:440px;max-width:92vw;max-height:88vh;overflow-y:auto}
 .modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:18px}
 .field{margin-bottom:12px}
 .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
-.field input,.field select{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none}
-.field input:focus,.field select:focus{border-color:var(--accent)}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
 .day-btns{display:flex;gap:4px;flex-wrap:wrap}
 .day-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .1s}
 .day-btn.on{background:rgba(124,106,255,0.2);border-color:var(--accent);color:var(--accent)}
@@ -166,14 +184,23 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .btn-primary:hover{opacity:.85}
 .btn-ghost{background:var(--surface2);color:var(--muted)}
 .btn-ghost:hover{color:var(--text)}
-.add-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px dashed var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;margin-top:0}
+.btn-danger-outline{background:rgba(255,95,122,0.12);color:var(--danger);border:1px solid rgba(255,95,122,0.3)}
+.add-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px dashed var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
 .add-btn:hover{border-color:var(--accent);color:var(--accent)}
 .del-btn{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .del-btn:hover{background:rgba(255,95,122,0.15);color:var(--danger)}
+.edit-btn{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.edit-btn:hover{background:rgba(124,106,255,0.15);color:var(--accent)}
+/* home scroll areas */
+.home-scroll{max-height:320px;overflow-y:auto}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 `
 
+// ── Alert helper ──────────────────────────────────────────────────────────────
+function alert2(msg) { window.alert(msg) }
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
 function Modal({ title, onClose, children }) {
   return (
     <div className="overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
@@ -188,22 +215,66 @@ function Modal({ title, onClose, children }) {
   )
 }
 
+// ── "기타" 입력 helper ────────────────────────────────────────────────────────
+function SelectWithEtc({ label, value, onChange, options }) {
+  const isEtc = value && !options.includes(value) ? true : value === '기타'
+  const [custom, setCustom] = useState(isEtc && value !== '기타' ? value : '')
+  const displayVal = isEtc && value !== '기타' ? '기타' : value
+  return (
+    <div className="field">
+      {label && <label>{label}</label>}
+      <select value={displayVal} onChange={e=>{
+        if (e.target.value === '기타') { onChange('기타'); }
+        else { onChange(e.target.value); setCustom('') }
+      }}>
+        {options.map(o=><option key={o}>{o}</option>)}
+        <option>기타</option>
+      </select>
+      {(displayVal === '기타') && (
+        <input style={{marginTop:6}} value={custom} placeholder="직접 입력..." onChange={e=>{setCustom(e.target.value);onChange(e.target.value||'기타')}}/>
+      )}
+    </div>
+  )
+}
+
+// ── 시간표 ────────────────────────────────────────────────────────────────────
 function Timetable({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
+  const [detail, setDetail] = useState(null) // item for detail modal
   const [form, setForm] = useState({"강의명":"","요일":[],"시작 시간":"09:00","종료 시간":"10:30","강의실":"","교수님":""})
-  const hrs = Array.from({length:14},(_,i)=>i+8)
+  const hrs = Array.from({length:15},(_,i)=>i+8) // 8~22
   const days = ["월","화","수","목","금","토","일"]
   const td = DAYS[today.getDay()]
   const cm={};let ci=0
   const cls = data.map(x=>{if(!cm[x["강의명"]])cm[x["강의명"]]=CC[ci++%CC.length];return{...x,c:cm[x["강의명"]]}})
   const toggleDay = d => setForm(f=>({...f,요일:f.요일.includes(d)?f.요일.filter(x=>x!==d):[...f.요일,d]}))
+
   const save = () => {
-    if(!form["강의명"]||form["요일"].length===0)return
+    const sh = parseInt(form["시작 시간"].split(":")[0])
+    const eh = parseInt(form["종료 시간"].split(":")[0])
+    if (sh < 8 || sh > 22 || eh < 8 || eh > 22) {
+      alert2("⚠️ 시간표는 08:00 ~ 22:00 사이만 등록 가능해요!")
+      return
+    }
+    if (eh <= sh) {
+      alert2("⚠️ 종료 시간이 시작 시간보다 늦어야 해요!")
+      return
+    }
+    if (!form["강의명"] || form["요일"].length===0) {
+      alert2("강의명과 요일을 입력해주세요!")
+      return
+    }
     setData(prev=>[...prev,{...form,id:newId(prev)}])
     setForm({"강의명":"","요일":[],"시작 시간":"09:00","종료 시간":"10:30","강의실":"","교수님":""})
     setShowAdd(false)
   }
-  const del = id => { if(window.confirm("이 수업을 삭제할까요?"))setData(prev=>prev.filter(x=>x.id!==id)) }
+
+  const del = (id) => {
+    if(window.confirm("이 수업을 삭제할까요?")) {
+      setData(prev=>prev.filter(x=>x.id!==id))
+      setDetail(null)
+    }
+  }
 
   return (
     <>
@@ -218,10 +289,16 @@ function Timetable({ data, setData }) {
             <div key={h} className="ttr">
               <div className="ttt">{h}:00</div>
               {days.map(d=>{
-                const x=cls.find(c=>{const ds=Array.isArray(c["요일"])?c["요일"]:[c["요일"]||""];return ds.includes(d)&&parseInt((c["시작 시간"]||"0").split(":")[0])===h})
+                const x=cls.find(c=>{
+                  const ds=Array.isArray(c["요일"])?c["요일"]:[c["요일"]||""]
+                  return ds.includes(d)&&parseInt((c["시작 시간"]||"0").split(":")[0])===h
+                })
                 return (
                   <div key={d} className="ttc">
-                    {x&&<div className="ttcls" style={{background:x.c.bg,borderLeft:"3px solid "+x.c.bl,color:x.c.t,top:0,height:((parseInt((x["종료 시간"]||"0").split(":")[0])-parseInt((x["시작 시간"]||"0").split(":")[0]))*32)+"px"}} onClick={()=>del(x.id)}>
+                    {x&&<div className="ttcls" style={{
+                      background:x.c.bg,borderLeft:"3px solid "+x.c.bl,color:x.c.t,top:0,
+                      height:((parseInt((x["종료 시간"]||"0").split(":")[0])-parseInt((x["시작 시간"]||"0").split(":")[0]))*32)+"px"
+                    }} onClick={()=>setDetail(x)}>
                       <div style={{fontWeight:700}}>{x["강의명"]}</div>
                       <div style={{opacity:.7,fontSize:8}}>{x["강의실"]}</div>
                     </div>}
@@ -232,8 +309,36 @@ function Timetable({ data, setData }) {
           ))}
         </div>
         {data.length===0&&<div className="empty"><div className="ei">📅</div>수업을 추가해주세요</div>}
-        <div style={{fontSize:10,color:'var(--muted)',marginTop:8}}>💡 수업 블록 클릭 시 삭제</div>
+        <div style={{fontSize:10,color:'var(--muted)',marginTop:8}}>💡 수업 블록 클릭 시 상세 보기</div>
       </div>
+
+      {/* 상세 보기 모달 */}
+      {detail&&(
+        <Modal title="📚 수업 상세" onClose={()=>setDetail(null)}>
+          <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:20}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <span style={{fontFamily:'Syne,sans-serif',fontWeight:700,fontSize:18}}>{detail["강의명"]}</span>
+              <div style={{display:'flex',gap:4}}>
+                {Array.isArray(detail["요일"])?detail["요일"].map(d=>(
+                  <span key={d} className="tag" style={{background:'rgba(124,106,255,0.15)',color:'var(--accent)',fontSize:11}}>{d}</span>
+                )):<span className="tag" style={{background:'rgba(124,106,255,0.15)',color:'var(--accent)',fontSize:11}}>{detail["요일"]}</span>}
+              </div>
+            </div>
+            {[["⏰ 시간", detail["시작 시간"]+" ~ "+detail["종료 시간"]],["📍 강의실",detail["강의실"]],["👨‍🏫 교수님",detail["교수님"]]].map(([k,v])=>v&&(
+              <div key={k} style={{display:'flex',gap:8,fontSize:13}}>
+                <span style={{color:'var(--muted)',minWidth:80}}>{k}</span>
+                <span style={{fontWeight:500}}>{v}</span>
+              </div>
+            ))}
+          </div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>setDetail(null)}>닫기</button>
+            <button className="btn btn-danger-outline" onClick={()=>del(detail.id)}>🗑 삭제</button>
+          </div>
+        </Modal>
+      )}
+
+      {/* 수업 추가 모달 */}
       {showAdd&&(
         <Modal title="📚 수업 추가" onClose={()=>setShowAdd(false)}>
           <div className="field"><label>강의명 *</label><input value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))} placeholder="예: 알고리즘"/></div>
@@ -241,8 +346,8 @@ function Timetable({ data, setData }) {
           <div className="field"><label>강의실</label><input value={form["강의실"]} onChange={e=>setForm(f=>({...f,"강의실":e.target.value}))} placeholder="예: 창의관 301"/></div>
           <div className="field"><label>요일 * (복수 선택)</label><div className="day-btns">{["월","화","수","목","금","토","일"].map(d=><button key={d} className={"day-btn"+(form["요일"].includes(d)?" on":"")} onClick={()=>toggleDay(d)}>{d}</button>)}</div></div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-            <div className="field"><label>시작 시간</label><input type="time" value={form["시작 시간"]} onChange={e=>setForm(f=>({...f,"시작 시간":e.target.value}))}/></div>
-            <div className="field"><label>종료 시간</label><input type="time" value={form["종료 시간"]} onChange={e=>setForm(f=>({...f,"종료 시간":e.target.value}))}/></div>
+            <div className="field"><label>시작 시간 (08:00~22:00)</label><input type="time" min="08:00" max="22:00" value={form["시작 시간"]} onChange={e=>setForm(f=>({...f,"시작 시간":e.target.value}))}/></div>
+            <div className="field"><label>종료 시간 (08:00~22:00)</label><input type="time" min="08:00" max="22:00" value={form["종료 시간"]} onChange={e=>setForm(f=>({...f,"종료 시간":e.target.value}))}/></div>
           </div>
           <div className="btn-row">
             <button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button>
@@ -254,105 +359,183 @@ function Timetable({ data, setData }) {
   )
 }
 
+// ── 과제 트래커 ───────────────────────────────────────────────────────────────
+// 탭: 전체 / 시작 전 / 진행 중 / 완료 (제출 완료 없음)
+// 진행상황: 시작 전 / 진행 중 / 완료
 function Assignments({ data, setData, courses }) {
-  const [tab, setTab] = useState("진행 중")
+  const [tab, setTab] = useState("전체")
   const [showAdd, setShowAdd] = useState(false)
-  const [form, setForm] = useState({"과제명":"","강의명":"","진행상황":"시작 전","제출 방법":"온라인 제출","데드라인":""})
+  const [editItem, setEditItem] = useState(null)
+  const [form, setForm] = useState({"과제명":"","강의명":"","진행상황":"시작 전","제출 방법":"온라인 제출","제출 방법 기타":"","데드라인":""})
+
+  const STATUS = ["시작 전","진행 중","완료"]
+  const SUBMIT = ["온라인 제출","이메일","직접 제출"]
+
   const items = data.filter(a=>tab==="전체"||a["진행상황"]===tab)
-  const sc = {"시작 전":"var(--muted)","진행 중":"var(--warn)","완료":"var(--accent)","제출 완료":"var(--success)"}
+  const sc = {"시작 전":"var(--muted)","진행 중":"var(--warn)","완료":"var(--success)"}
   const ds = d=>{if(!d)return{};if(d==="D-DAY")return{background:"rgba(255,95,122,0.2)",color:"var(--danger)"};const n=parseInt(d.replace("D-",""));if(!isNaN(n)&&n<=3)return{background:"rgba(255,179,71,0.2)",color:"var(--warn)"};return{background:"var(--surface2)",color:"var(--muted)"}}
-  const save = ()=>{if(!form["과제명"])return;setData(prev=>[...prev,{...form,id:newId(prev)}]);setForm({"과제명":"","강의명":"","진행상황":"시작 전","제출 방법":"온라인 제출","데드라인":""});setShowAdd(false)}
-  const updateStatus = (id,status)=>setData(prev=>prev.map(a=>a.id===id?{...a,"진행상황":status}:a))
+
+  const openAdd = () => { setForm({"과제명":"","강의명":"","진행상황":"시작 전","제출 방법":"온라인 제출","제출 방법 기타":"","데드라인":""}); setShowAdd(true) }
+  const openEdit = (item) => {
+    const isEtc = !SUBMIT.includes(item["제출 방법"])
+    setForm({...item,"제출 방법":isEtc?"기타":item["제출 방법"],"제출 방법 기타":isEtc?item["제출 방법"]:""})
+    setEditItem(item); setShowAdd(true)
+  }
+  const save = () => {
+    if(!form["과제명"])return
+    const submitMethod = form["제출 방법"]==="기타" ? (form["제출 방법 기타"]||"기타") : form["제출 방법"]
+    const entry = {...form,"제출 방법":submitMethod}
+    delete entry["제출 방법 기타"]
+    if(editItem) setData(prev=>prev.map(a=>a.id===editItem.id?{...entry,id:editItem.id}:a))
+    else setData(prev=>[...prev,{...entry,id:newId(prev)}])
+    setShowAdd(false); setEditItem(null)
+  }
   const del = id=>setData(prev=>prev.filter(a=>a.id!==id))
+  const updateStatus = (id,status)=>setData(prev=>prev.map(a=>a.id===id?{...a,"진행상황":status}:a))
+
   return (
     <>
       <div className="card">
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
           <div className="ct" style={{margin:0}}>📝 과제 트래커</div>
-          <button className="add-btn" onClick={()=>setShowAdd(true)}>+ 추가</button>
+          <button className="add-btn" onClick={openAdd}>+ 추가</button>
         </div>
-        <div className="tabs">{["진행 중","시작 전","완료","제출 완료","전체"].map(t=><button key={t} className={"tab"+(tab===t?" on":"")} onClick={()=>setTab(t)}>{t}</button>)}</div>
-        {items.length===0?<div className="empty"><div className="ei">✅</div>항목 없음!</div>:items.map(a=>(
-          <div key={a.id} className="ai">
-            <div className="sd" style={{background:sc[a["진행상황"]]||"var(--muted)"}}/>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{fontWeight:500,fontSize:13}}>{a["과제명"]}</div>
-              <div style={{fontSize:10,color:"var(--muted)",marginTop:1}}>{a["강의명"]} {a["제출 방법"]&&"· "+a["제출 방법"]}</div>
+        <div className="tabs">{["전체","시작 전","진행 중","완료"].map(t=><button key={t} className={"tab"+(tab===t?" on":"")} onClick={()=>setTab(t)}>{t}</button>)}</div>
+        <div className="home-scroll">
+          {items.length===0?<div className="empty"><div className="ei">✅</div>항목 없음!</div>:items.map(a=>(
+            <div key={a.id} className="ai">
+              <div className="sd" style={{background:sc[a["진행상황"]]||"var(--muted)"}}/>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:500,fontSize:13}}>{a["과제명"]}</div>
+                <div style={{fontSize:10,color:"var(--muted)",marginTop:1}}>{a["강의명"]} {a["제출 방법"]&&"· "+a["제출 방법"]}</div>
+              </div>
+              {a["데드라인"]&&<span className="dd" style={ds(dday(a["데드라인"]))}>{dday(a["데드라인"])}</span>}
+              <select value={a["진행상황"]} onChange={e=>updateStatus(a.id,e.target.value)} style={{background:'var(--surface2)',border:'1px solid var(--border)',color:'var(--muted)',borderRadius:6,padding:'2px 5px',fontSize:10,cursor:'pointer'}}>
+                {STATUS.map(s=><option key={s}>{s}</option>)}
+              </select>
+              <button className="edit-btn" onClick={()=>openEdit(a)}>✏️</button>
+              <button className="del-btn" onClick={()=>del(a.id)}>×</button>
             </div>
-            {a["데드라인"]&&<span className="dd" style={ds(dday(a["데드라인"]))}>{dday(a["데드라인"])}</span>}
-            <select value={a["진행상황"]} onChange={e=>updateStatus(a.id,e.target.value)} style={{background:'var(--surface2)',border:'1px solid var(--border)',color:'var(--muted)',borderRadius:6,padding:'2px 5px',fontSize:10,cursor:'pointer'}}>
-              {["시작 전","진행 중","완료","제출 완료"].map(s=><option key={s}>{s}</option>)}
-            </select>
-            <button className="del-btn" onClick={()=>del(a.id)}>×</button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       {showAdd&&(
-        <Modal title="📝 과제 추가" onClose={()=>setShowAdd(false)}>
+        <Modal title={editItem?"📝 과제 수정":"📝 과제 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
           <div className="field"><label>과제명 *</label><input value={form["과제명"]} onChange={e=>setForm(f=>({...f,"과제명":e.target.value}))} placeholder="예: 알고리즘 과제 3"/></div>
           <div className="field"><label>강의</label><select value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))}><option value="">선택 안 함</option>{courses.map(c=><option key={c.id}>{c["강의명"]}</option>)}</select></div>
-          <div className="field"><label>제출 방법</label><select value={form["제출 방법"]} onChange={e=>setForm(f=>({...f,"제출 방법":e.target.value}))}>{["온라인 제출","이메일","직접 제출","기타"].map(s=><option key={s}>{s}</option>)}</select></div>
+          <div className="field"><label>진행상황</label><select value={form["진행상황"]} onChange={e=>setForm(f=>({...f,"진행상황":e.target.value}))}>{STATUS.map(s=><option key={s}>{s}</option>)}</select></div>
+          <SelectWithEtc label="제출 방법" value={form["제출 방법"]} onChange={v=>setForm(f=>({...f,"제출 방법":v}))} options={SUBMIT}/>
           <div className="field"><label>데드라인</label><input type="date" value={form["데드라인"]} onChange={e=>setForm(f=>({...f,"데드라인":e.target.value}))}/></div>
-          <div className="btn-row"><button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button><button className="btn btn-primary" onClick={save}>추가</button></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
         </Modal>
       )}
     </>
   )
 }
 
+// ── 시험 알리미 ───────────────────────────────────────────────────────────────
+// - 과거 날짜 등록 불가
+// - 구분: 중간고사/기말고사/퀴즈/기타 (과제 발표 제외)
+// - 반복: 없음/매주/격주/3주마다/매달
+// - 연도 기본값: 올해
 function Exams({ data, setData, courses }) {
   const [showAdd, setShowAdd] = useState(false)
-  const [form, setForm] = useState({"시험명":"","강의명":"","시험 구분":"중간고사","시험 범위":"","일시":""})
+  const [editItem, setEditItem] = useState(null)
+  const [form, setForm] = useState({"시험명":"","강의명":"","시험 구분":"중간고사","시험 범위":"","일시":todayStr,"반복":"없음"})
+  const TYPES = ["중간고사","기말고사","퀴즈","기타"]
+  const REPEAT = ["없음","매주","격주","3주마다","매달"]
   const up = data.filter(x=>x["일시"]&&new Date(x["일시"])>=today).sort((a,b)=>new Date(a["일시"])-new Date(b["일시"]))
-  const tc = {"중간고사":"var(--danger)","기말고사":"var(--accent2)","퀴즈":"var(--warn)","과제 발표":"var(--accent3)"}
-  const save = ()=>{if(!form["시험명"])return;setData(prev=>[...prev,{...form,id:newId(prev)}]);setForm({"시험명":"","강의명":"","시험 구분":"중간고사","시험 범위":"","일시":""});setShowAdd(false)}
+  const tc = {"중간고사":"var(--danger)","기말고사":"var(--accent2)","퀴즈":"var(--warn)"}
+
+  const openAdd = () => { setForm({"시험명":"","강의명":"","시험 구분":"중간고사","시험 범위":"","일시":todayStr,"반복":"없음"}); setShowAdd(true) }
+  const openEdit = (item) => { setForm({...item}); setEditItem(item); setShowAdd(true) }
+
+  const save = () => {
+    if(!form["시험명"])return
+    if(form["일시"]<todayStr) { alert2("⚠️ 과거 날짜에는 시험을 등록할 수 없어요!"); return }
+    if(editItem) setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false); setEditItem(null)
+  }
   const del = id=>setData(prev=>prev.filter(x=>x.id!==id))
+
   return (
     <>
       <div className="card">
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
           <div className="ct" style={{margin:0}}>📅 시험 알리미</div>
-          <button className="add-btn" onClick={()=>setShowAdd(true)}>+ 추가</button>
+          <button className="add-btn" onClick={openAdd}>+ 추가</button>
         </div>
-        {up.length===0?<div className="empty"><div className="ei">🎉</div>예정된 시험 없음</div>:up.map(x=>(
-          <div key={x.id} className="ai">
-            <div style={{flex:1}}>
-              <div style={{display:'flex',alignItems:'center',gap:6}}>
-                <span className="tag" style={{background:(tc[x["시험 구분"]]||"var(--accent)")+"22",color:tc[x["시험 구분"]]||"var(--accent)",fontSize:9,padding:'2px 7px'}}>{x["시험 구분"]}</span>
-                <span style={{fontWeight:500,fontSize:13}}>{x["시험명"]}</span>
+        <div className="home-scroll">
+          {up.length===0?<div className="empty"><div className="ei">🎉</div>예정된 시험 없음</div>:up.map(x=>(
+            <div key={x.id} className="ai">
+              <div style={{flex:1}}>
+                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                  <span className="tag" style={{background:(tc[x["시험 구분"]]||"var(--muted)")+"22",color:tc[x["시험 구분"]]||"var(--muted)",fontSize:9,padding:'2px 7px'}}>{x["시험 구분"]}</span>
+                  <span style={{fontWeight:500,fontSize:13}}>{x["시험명"]}</span>
+                  {x["반복"]&&x["반복"]!=="없음"&&<span style={{fontSize:9,color:'var(--accent3)',background:'rgba(106,255,218,0.1)',padding:'1px 6px',borderRadius:4}}>🔁 {x["반복"]}</span>}
+                </div>
+                <div style={{fontSize:10,color:"var(--muted)",marginTop:2,display:'flex',gap:8}}>
+                  {x["시험 범위"]&&<span>범위: {x["시험 범위"]}</span>}
+                  {x["일시"]&&<span>{fmtDate(x["일시"])}</span>}
+                </div>
               </div>
-              {x["시험 범위"]&&<div style={{fontSize:10,color:"var(--muted)",marginTop:2}}>범위: {x["시험 범위"]}</div>}
+              <span className="dd" style={{background:"rgba(124,106,255,0.2)",color:"var(--accent)"}}>{dday(x["일시"])}</span>
+              <button className="edit-btn" onClick={()=>openEdit(x)}>✏️</button>
+              <button className="del-btn" onClick={()=>del(x.id)}>×</button>
             </div>
-            <span className="dd" style={{background:"rgba(124,106,255,0.2)",color:"var(--accent)"}}>{dday(x["일시"])}</span>
-            <button className="del-btn" onClick={()=>del(x.id)}>×</button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       {showAdd&&(
-        <Modal title="📅 시험 추가" onClose={()=>setShowAdd(false)}>
+        <Modal title={editItem?"📅 시험 수정":"📅 시험 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
           <div className="field"><label>시험명 *</label><input value={form["시험명"]} onChange={e=>setForm(f=>({...f,"시험명":e.target.value}))} placeholder="예: 알고리즘 중간고사"/></div>
           <div className="field"><label>강의</label><select value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))}><option value="">선택 안 함</option>{courses.map(c=><option key={c.id}>{c["강의명"]}</option>)}</select></div>
-          <div className="field"><label>시험 구분</label><select value={form["시험 구분"]} onChange={e=>setForm(f=>({...f,"시험 구분":e.target.value}))}>{["중간고사","기말고사","퀴즈","과제 발표","기타"].map(s=><option key={s}>{s}</option>)}</select></div>
+          <SelectWithEtc label="시험 구분" value={form["시험 구분"]} onChange={v=>setForm(f=>({...f,"시험 구분":v}))} options={TYPES}/>
           <div className="field"><label>시험 범위</label><input value={form["시험 범위"]} onChange={e=>setForm(f=>({...f,"시험 범위":e.target.value}))} placeholder="예: 1~5장"/></div>
-          <div className="field"><label>일시</label><input type="date" value={form["일시"]} onChange={e=>setForm(f=>({...f,"일시":e.target.value}))}/></div>
-          <div className="btn-row"><button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button><button className="btn btn-primary" onClick={save}>추가</button></div>
+          <div className="field">
+            <label>일시 (yyyy-mm-dd, 오늘 이후만 가능)</label>
+            <input type="date" min={todayStr} value={form["일시"]} onChange={e=>setForm(f=>({...f,"일시":e.target.value}))}/>
+          </div>
+          <div className="field"><label>반복</label>
+            <select value={form["반복"]} onChange={e=>setForm(f=>({...f,"반복":e.target.value}))}>
+              {REPEAT.map(r=><option key={r}>{r}</option>)}
+            </select>
+          </div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
         </Modal>
       )}
     </>
   )
 }
 
+// ── 성적 계산기 ───────────────────────────────────────────────────────────────
 function Grades({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
+  const [editItem, setEditItem] = useState(null)
   const sems = [...new Set(data.map(i=>i["학기"]).filter(Boolean))].sort().reverse()
-  const [sem, setSem] = useState(sems[0]||"2025-1")
+  const [sem, setSem] = useState(sems[0]||thisYear+"-1")
   const [form, setForm] = useState({"강의명":"","학점 수":3,"학기":sem,"취득 등급":"A"})
   const fil = data.filter(i=>i["학기"]===sem)
   const tc = fil.reduce((s,i)=>s+(Number(i["학점 수"])||0),0)
   const ws = fil.reduce((s,i)=>{const g=gpa(i["취득 등급"]);return s+(g!==null?g*(Number(i["학점 수"])||0):0)},0)
   const avg = tc>0?(ws/tc).toFixed(2):"-"
-  const save = ()=>{if(!form["강의명"])return;setData(prev=>[...prev,{...form,id:newId(prev)}]);setForm({"강의명":"","학점 수":3,"학기":sem,"취득 등급":"A"});setShowAdd(false)}
+
+  const openEdit = (item) => { setForm({...item}); setEditItem(item); setShowAdd(true) }
+  const save = ()=>{
+    if(!form["강의명"])return
+    if(editItem) setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false); setEditItem(null)
+  }
   const del = id=>setData(prev=>prev.filter(x=>x.id!==id))
+
   return (
     <>
       <div className="card">
@@ -360,7 +543,7 @@ function Grades({ data, setData }) {
           <div className="ct" style={{margin:0}}>📊 성적 계산기</div>
           <div style={{display:'flex',gap:8,alignItems:'center'}}>
             <select value={sem} onChange={e=>setSem(e.target.value)} style={{background:'var(--surface2)',border:'1px solid var(--border)',color:'var(--text)',borderRadius:7,padding:'3px 7px',fontSize:10}}>{sems.map(s=><option key={s}>{s}</option>)}</select>
-            <button className="add-btn" onClick={()=>setShowAdd(true)}>+ 추가</button>
+            <button className="add-btn" onClick={()=>{setForm({"강의명":"","학점 수":3,"학기":sem,"취득 등급":"A"});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
           </div>
         </div>
         <div style={{display:'flex',alignItems:'baseline',gap:6,marginBottom:16}}>
@@ -373,31 +556,42 @@ function Grades({ data, setData }) {
               <div className="gl"><span>{c["강의명"]} <span style={{color:'var(--muted)',fontSize:10}}>({c["학점 수"]}학점)</span></span><span style={{fontWeight:700,color:bc}}>{c["취득 등급"]||"—"}</span></div>
               <div className="gt"><div className="gf" style={{width:pct+"%",background:bc}}/></div>
             </div>
+            <button className="edit-btn" onClick={()=>openEdit(c)}>✏️</button>
             <button className="del-btn" onClick={()=>del(c.id)}>×</button>
           </div>
         )})}
         {fil.length===0&&<div className="empty"><div className="ei">📊</div>성적을 추가해주세요</div>}
       </div>
       {showAdd&&(
-        <Modal title="📊 성적 추가" onClose={()=>setShowAdd(false)}>
+        <Modal title={editItem?"📊 성적 수정":"📊 성적 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
           <div className="field"><label>강의명 *</label><input value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))} placeholder="예: 알고리즘"/></div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
             <div className="field"><label>학점 수</label><input type="number" min="1" max="6" value={form["학점 수"]} onChange={e=>setForm(f=>({...f,"학점 수":Number(e.target.value)}))}/></div>
-            <div className="field"><label>학기</label><input value={form["학기"]} onChange={e=>setForm(f=>({...f,"학기":e.target.value}))} placeholder="2025-1"/></div>
+            <div className="field"><label>학기 (예: 2025-1)</label><input value={form["학기"]} onChange={e=>setForm(f=>({...f,"학기":e.target.value}))} placeholder={thisYear+"-1"}/></div>
           </div>
           <div className="field"><label>취득 등급</label><select value={form["취득 등급"]} onChange={e=>setForm(f=>({...f,"취득 등급":e.target.value}))}>{["A+","A","B+","B","C+","C","D+","D","F"].map(g=><option key={g}>{g}</option>)}</select></div>
-          <div className="btn-row"><button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button><button className="btn btn-primary" onClick={save}>추가</button></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
         </Modal>
       )}
     </>
   )
 }
 
+// ── 북마크 ────────────────────────────────────────────────────────────────────
 function Bookmarks({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState({"사이트명":"","URL":"","카테고리":"커스텀","아이콘":"🔗"})
-  const save = ()=>{if(!form["사이트명"]||!form["URL"])return;const url=form["URL"].startsWith("http")?form["URL"]:"https://"+form["URL"];setData(prev=>[...prev,{...form,"URL":url,id:newId(prev)}]);setForm({"사이트명":"","URL":"","카테고리":"커스텀","아이콘":"🔗"});setShowAdd(false)}
-  const del = (e,id)=>{e.preventDefault();e.stopPropagation();setData(prev=>prev.filter(x=>x.id!==id))}
+  const save = ()=>{
+    if(!form["사이트명"]||!form["URL"])return
+    const url=form["URL"].startsWith("http")?form["URL"]:"https://"+form["URL"]
+    setData(prev=>[...prev,{...form,"URL":url,id:newId(prev)}])
+    setForm({"사이트명":"","URL":"","카테고리":"커스텀","아이콘":"🔗"})
+    setShowAdd(false)
+  }
+  const del=(e,id)=>{e.preventDefault();e.stopPropagation();setData(prev=>prev.filter(x=>x.id!==id))}
   return (
     <>
       <div className="card">
@@ -424,13 +618,17 @@ function Bookmarks({ data, setData }) {
             <div className="field"><label>아이콘 (이모지)</label><input value={form["아이콘"]} onChange={e=>setForm(f=>({...f,"아이콘":e.target.value}))} placeholder="🔗"/></div>
             <div className="field"><label>카테고리</label><select value={form["카테고리"]} onChange={e=>setForm(f=>({...f,"카테고리":e.target.value}))}>{["기본","학교","수강신청","커스텀"].map(c=><option key={c}>{c}</option>)}</select></div>
           </div>
-          <div className="btn-row"><button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button><button className="btn btn-primary" onClick={save}>추가</button></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button>
+            <button className="btn btn-primary" onClick={save}>추가</button>
+          </div>
         </Modal>
       )}
     </>
   )
 }
 
+// ── 캘린더 (세로 고정) ────────────────────────────────────────────────────────
 function Calendar({ assignments, exams }) {
   const [cur, setCur] = useState(new Date(today.getFullYear(),today.getMonth(),1))
   const yr=cur.getFullYear(),mo=cur.getMonth()
@@ -441,7 +639,7 @@ function Calendar({ assignments, exams }) {
   for(let i=1;i<=dim;i++)cells.push({d:i,c:true})
   while(cells.length%7!==0)cells.push({d:cells.length-dim-fd+1,c:false})
   return (
-    <div className="card">
+    <div className="card" style={{alignSelf:'start'}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
         <div className="ct" style={{margin:0}}>📆 캘린더</div>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
@@ -452,43 +650,328 @@ function Calendar({ assignments, exams }) {
       </div>
       <div className="cg">
         {["일","월","화","수","목","금","토"].map(d=><div key={d} className="cdh" style={{color:d==="일"?"var(--danger)":d==="토"?"var(--accent)":"var(--muted)"}}>{d}</div>)}
-        {cells.map((c,i)=>{const ds=c.c?(yr+"-"+String(mo+1).padStart(2,"0")+"-"+String(c.d).padStart(2,"0")):"";const isTd=c.c&&c.d===today.getDate()&&mo===today.getMonth()&&yr===today.getFullYear();return(
-          <div key={i} className={"cd"+(isTd?" td":"")+(!c.c?" om":"")}>{c.d}{evts.has(ds)&&!isTd&&<div className="dot"/>}</div>
-        )})}
+        {cells.map((c,i)=>{
+          const ds=c.c?(yr+"-"+String(mo+1).padStart(2,"0")+"-"+String(c.d).padStart(2,"0")):""
+          const isTd=c.c&&c.d===today.getDate()&&mo===today.getMonth()&&yr===today.getFullYear()
+          return <div key={i} className={"cd"+(isTd?" td":"")+(!c.c?" om":"")}>{c.d}{evts.has(ds)&&!isTd&&<div className="dot"/>}</div>
+        })}
       </div>
     </div>
   )
 }
 
-function People({ data }) {
-  const ac=["var(--accent)","var(--accent2)","var(--accent3)","var(--warn)","var(--success)"]
-  return <div className="card"><div className="ct">👥 인간 정보</div>{data.map((p,i)=><div key={p.id} className="pc"><div className="av" style={{background:ac[i%ac.length]+"25",color:ac[i%ac.length]}}>{(p["이름"]||"?")[0]}</div><div style={{flex:1,minWidth:0}}><div style={{fontSize:12,fontWeight:500}}>{p["이름"]}</div><div style={{fontSize:10,color:'var(--muted)'}}>{p["구분"]}{p["이메일"]?" · "+p["이메일"]:""}</div></div></div>)}{data.length===0&&<div className="empty"><div className="ei">👥</div>연락처를 추가해주세요</div>}</div>
+// ── 스펙 관리 ─────────────────────────────────────────────────────────────────
+function Specs({ data, setData }) {
+  const [showAdd, setShowAdd] = useState(false)
+  const [editItem, setEditItem] = useState(null)
+  const CATS = ["공인 시험","자격증","대회","동아리"]
+  const STATUS = ["준비 중","취득 완료","만료 임박","만료"]
+  const [form, setForm] = useState({"스펙명":"","카테고리":"공인 시험","현재 점수":"","목표 점수":"","상태":"준비 중","메모":""})
+  const sc = {"준비 중":"var(--warn)","취득 완료":"var(--success)","만료 임박":"var(--danger)","만료":"var(--muted)"}
+
+  const openEdit = (item)=>{setForm({...item});setEditItem(item);setShowAdd(true)}
+  const save = ()=>{
+    if(!form["스펙명"])return
+    if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false);setEditItem(null)
+  }
+  const del=id=>setData(prev=>prev.filter(x=>x.id!==id))
+  return (
+    <>
+      <div className="card">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+          <div className="ct" style={{margin:0}}>🏆 스펙 관리</div>
+          <button className="add-btn" onClick={()=>{setForm({"스펙명":"","카테고리":"공인 시험","현재 점수":"","목표 점수":"","상태":"준비 중","메모":""});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
+        </div>
+        {data.map(s=>(
+          <div key={s.id} className="si">
+            <div className="sh">
+              <div style={{fontSize:12,fontWeight:500}}>{s["스펙명"]}</div>
+              <div style={{display:'flex',gap:6,alignItems:'center'}}>
+                <span className="tag" style={{background:(sc[s["상태"]]||"var(--muted)")+"22",color:sc[s["상태"]]||"var(--muted)",fontSize:9,padding:'2px 7px'}}>{s["상태"]||"기타"}</span>
+                <button className="edit-btn" onClick={()=>openEdit(s)}>✏️</button>
+                <button className="del-btn" onClick={()=>del(s.id)}>×</button>
+              </div>
+            </div>
+            <div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:8}}>
+              {s["카테고리"]&&<span>{s["카테고리"]}</span>}
+              {s["현재 점수"]&&<span>현재: {s["현재 점수"]}</span>}
+              {s["목표 점수"]&&<span>목표: {s["목표 점수"]}</span>}
+            </div>
+            {s["메모"]&&<div style={{fontSize:10,color:'var(--muted)',marginTop:3}}>{s["메모"]}</div>}
+          </div>
+        ))}
+        {data.length===0&&<div className="empty"><div className="ei">🏆</div>스펙을 추가해주세요</div>}
+      </div>
+      {showAdd&&(
+        <Modal title={editItem?"🏆 스펙 수정":"🏆 스펙 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
+          <div className="field"><label>스펙명 *</label><input value={form["스펙명"]} onChange={e=>setForm(f=>({...f,"스펙명":e.target.value}))} placeholder="예: TOEIC"/></div>
+          <SelectWithEtc label="카테고리" value={form["카테고리"]} onChange={v=>setForm(f=>({...f,"카테고리":v}))} options={CATS}/>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+            <div className="field"><label>현재 점수/등급</label><input value={form["현재 점수"]} onChange={e=>setForm(f=>({...f,"현재 점수":e.target.value}))} placeholder="820"/></div>
+            <div className="field"><label>목표 점수/등급</label><input value={form["목표 점수"]} onChange={e=>setForm(f=>({...f,"목표 점수":e.target.value}))} placeholder="900"/></div>
+          </div>
+          <div className="field"><label>상태</label><select value={form["상태"]} onChange={e=>setForm(f=>({...f,"상태":e.target.value}))}>{STATUS.map(s=><option key={s}>{s}</option>)}</select></div>
+          <div className="field"><label>메모</label><textarea rows={2} value={form["메모"]} onChange={e=>setForm(f=>({...f,"메모":e.target.value}))} placeholder="추가 메모..."/></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
 }
 
-function Specs({ data }) {
-  const sc={"준비 중":"var(--warn)","취득 완료":"var(--success)","만료 임박":"var(--danger)","만료":"var(--muted)"}
-  return <div className="card"><div className="ct">🏆 스펙 관리</div>{data.map(s=><div key={s.id} className="si"><div className="sh"><div style={{fontSize:12,fontWeight:500}}>{s["스펙명"]}</div><span className="tag" style={{background:(sc[s["상태"]]||"var(--muted)")+"22",color:sc[s["상태"]]||"var(--muted)",fontSize:9,padding:'2px 7px'}}>{s["상태"]||"기타"}</span></div><div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:8}}>{s["카테고리"]&&<span>{s["카테고리"]}</span>}{s["현재 점수"]&&<span>현재: {s["현재 점수"]}</span>}{s["목표 점수"]&&<span>목표: {s["목표 점수"]}</span>}</div></div>)}{data.length===0&&<div className="empty"><div className="ei">🏆</div>스펙을 추가해주세요</div>}</div>
+// ── 인간 정보 ─────────────────────────────────────────────────────────────────
+function People({ data, setData }) {
+  const [showAdd, setShowAdd] = useState(false)
+  const [editItem, setEditItem] = useState(null)
+  const TYPES = ["교수님","조교","친구","팀플 팀원"]
+  const [form, setForm] = useState({"이름":"","구분":"교수님","이메일":"","전화번호":"","위치":"","메모":""})
+  const ac = ["var(--accent)","var(--accent2)","var(--accent3)","var(--warn)","var(--success)"]
+
+  const openEdit=(item)=>{setForm({...item});setEditItem(item);setShowAdd(true)}
+  const save=()=>{
+    if(!form["이름"])return
+    if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false);setEditItem(null)
+  }
+  const del=id=>setData(prev=>prev.filter(x=>x.id!==id))
+  return (
+    <>
+      <div className="card">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+          <div className="ct" style={{margin:0}}>👥 인간 정보</div>
+          <button className="add-btn" onClick={()=>{setForm({"이름":"","구분":"교수님","이메일":"","전화번호":"","위치":"","메모":""});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
+        </div>
+        {data.map((p,i)=>(
+          <div key={p.id} className="pc">
+            <div className="av" style={{background:ac[i%ac.length]+"25",color:ac[i%ac.length]}}>{(p["이름"]||"?")[0]}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:12,fontWeight:500}}>{p["이름"]}</div>
+              <div style={{fontSize:10,color:'var(--muted)'}}>{p["구분"]}{p["이메일"]?" · "+p["이메일"]:""}{p["위치"]?" · "+p["위치"]:""}</div>
+              {p["메모"]&&<div style={{fontSize:10,color:'var(--muted)',marginTop:1}}>{p["메모"]}</div>}
+            </div>
+            <button className="edit-btn" onClick={()=>openEdit(p)}>✏️</button>
+            <button className="del-btn" onClick={()=>del(p.id)}>×</button>
+          </div>
+        ))}
+        {data.length===0&&<div className="empty"><div className="ei">👥</div>연락처를 추가해주세요</div>}
+      </div>
+      {showAdd&&(
+        <Modal title={editItem?"👥 정보 수정":"👥 인물 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
+          <div className="field"><label>이름 *</label><input value={form["이름"]} onChange={e=>setForm(f=>({...f,"이름":e.target.value}))} placeholder="예: 김○○ 교수님"/></div>
+          <SelectWithEtc label="구분" value={form["구분"]} onChange={v=>setForm(f=>({...f,"구분":v}))} options={TYPES}/>
+          <div className="field"><label>이메일</label><input type="email" value={form["이메일"]} onChange={e=>setForm(f=>({...f,"이메일":e.target.value}))} placeholder="example@seoultech.ac.kr"/></div>
+          <div className="field"><label>전화번호</label><input value={form["전화번호"]} onChange={e=>setForm(f=>({...f,"전화번호":e.target.value}))} placeholder="010-0000-0000"/></div>
+          <div className="field"><label>위치 (강의실 등)</label><input value={form["위치"]} onChange={e=>setForm(f=>({...f,"위치":e.target.value}))} placeholder="창의관 514"/></div>
+          <div className="field"><label>메모</label><textarea rows={2} value={form["메모"]} onChange={e=>setForm(f=>({...f,"메모":e.target.value}))} placeholder="면담 가능 시간 등..."/></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
 }
 
-function Records({ data }) {
-  const [cat,setCat]=useState("전체")
-  const cats=["전체","🍜 맛집","📖 책","🎬 영화","📹 영상","🛍 제품"]
-  const fil=data.filter(r=>cat==="전체"||r["카테고리"]===cat)
-  return <div className="card"><div className="ct">📚 나만의 기록장</div><div className="tabs">{cats.map(c=><button key={c} className={"tab"+(cat===c?" on":"")} onClick={()=>setCat(c)}>{c}</button>)}</div>{fil.map(r=><div key={r.id} className="ri"><span style={{fontSize:15}}>{(r["카테고리"]||"").split(" ")[0]||"📌"}</span><div style={{flex:1,minWidth:0}}><div style={{fontSize:12,fontWeight:500}}>{r["제목"]}</div>{r["한줄 감상"]&&<div style={{fontSize:10,color:'var(--muted)'}}>{r["한줄 감상"]}</div>}</div><div style={{color:'#ffb347',fontSize:10}}>{r["별점"]||""}</div></div>)}{fil.length===0&&<div className="empty"><div className="ei">📚</div>기록을 추가해주세요</div>}</div>
+// ── 나만의 기록장 ─────────────────────────────────────────────────────────────
+function Records({ data, setData }) {
+  const [cat, setCat] = useState("전체")
+  const [showAdd, setShowAdd] = useState(false)
+  const [editItem, setEditItem] = useState(null)
+  const CATS = ["🍜 맛집","📖 책","🎬 영화","📹 영상","🛍 제품"]
+  const STARS = ["⭐","⭐⭐","⭐⭐⭐","⭐⭐⭐⭐","⭐⭐⭐⭐⭐"]
+  const [form, setForm] = useState({"제목":"","카테고리":"🍜 맛집","별점":"⭐⭐⭐","한줄 감상":"","링크":"","메모":""})
+  const fil = data.filter(r=>cat==="전체"||r["카테고리"]===cat)
+
+  const openEdit=(item)=>{setForm({...item});setEditItem(item);setShowAdd(true)}
+  const save=()=>{
+    if(!form["제목"])return
+    if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false);setEditItem(null)
+  }
+  const del=id=>setData(prev=>prev.filter(x=>x.id!==id))
+  return (
+    <>
+      <div className="card">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+          <div className="ct" style={{margin:0}}>📚 나만의 기록장</div>
+          <button className="add-btn" onClick={()=>{setForm({"제목":"","카테고리":"🍜 맛집","별점":"⭐⭐⭐","한줄 감상":"","링크":"","메모":""});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
+        </div>
+        <div className="tabs">{["전체",...CATS].map(c=><button key={c} className={"tab"+(cat===c?" on":"")} onClick={()=>setCat(c)}>{c}</button>)}</div>
+        {fil.map(r=>(
+          <div key={r.id} className="ri">
+            <span style={{fontSize:15}}>{(r["카테고리"]||"").split(" ")[0]||"📌"}</span>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:12,fontWeight:500}}>{r["제목"]}</div>
+              {r["한줄 감상"]&&<div style={{fontSize:10,color:'var(--muted)'}}>{r["한줄 감상"]}</div>}
+            </div>
+            <div style={{color:'#ffb347',fontSize:10}}>{r["별점"]||""}</div>
+            <button className="edit-btn" onClick={()=>openEdit(r)}>✏️</button>
+            <button className="del-btn" onClick={()=>del(r.id)}>×</button>
+          </div>
+        ))}
+        {fil.length===0&&<div className="empty"><div className="ei">📚</div>기록을 추가해주세요</div>}
+      </div>
+      {showAdd&&(
+        <Modal title={editItem?"📚 기록 수정":"📚 기록 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
+          <div className="field"><label>제목 *</label><input value={form["제목"]} onChange={e=>setForm(f=>({...f,"제목":e.target.value}))} placeholder="예: 인터스텔라"/></div>
+          <SelectWithEtc label="카테고리" value={form["카테고리"]} onChange={v=>setForm(f=>({...f,"카테고리":v}))} options={CATS}/>
+          <div className="field"><label>별점</label><select value={form["별점"]} onChange={e=>setForm(f=>({...f,"별점":e.target.value}))}>{STARS.map(s=><option key={s}>{s}</option>)}</select></div>
+          <div className="field"><label>한줄 감상</label><input value={form["한줄 감상"]} onChange={e=>setForm(f=>({...f,"한줄 감상":e.target.value}))} placeholder="예: 역대급 SF"/></div>
+          <div className="field"><label>링크 (URL)</label><input value={form["링크"]} onChange={e=>setForm(f=>({...f,"링크":e.target.value}))} placeholder="https://..."/></div>
+          <div className="field"><label>상세 메모</label><textarea rows={2} value={form["메모"]} onChange={e=>setForm(f=>({...f,"메모":e.target.value}))} placeholder="추가 메모..."/></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
 }
 
+// ── 버킷리스트 ────────────────────────────────────────────────────────────────
 function Bucket({ data, setData }) {
-  const done=data.filter(b=>b["완료"]).length
-  const toggle=id=>setData(prev=>prev.map(b=>b.id===id?{...b,완료:!b["완료"]}:b))
-  return <div className="card"><div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}><div className="ct" style={{margin:0}}>🪣 버킷리스트</div><span style={{fontSize:10,color:'var(--muted)'}}>{done}/{data.length} 완료</span></div><div style={{height:4,background:'var(--surface2)',borderRadius:2,marginBottom:12,overflow:'hidden'}}><div style={{height:'100%',width:(data.length>0?done/data.length*100:0)+"%",background:'var(--success)',borderRadius:2,transition:'width 0.5s'}}/></div>{data.map(b=><div key={b.id} className="bi"><div className={"cb"+(b["완료"]?" dn":"")} onClick={()=>toggle(b.id)}>{b["완료"]&&"✓"}</div><div style={{flex:1}}><div style={{fontSize:12,fontWeight:500,textDecoration:b["완료"]?"line-through":"none",opacity:b["완료"]?0.5:1}}>{b["항목"]}</div>{b["시즌"]&&<div style={{fontSize:10,color:'var(--muted)'}}>{b["시즌"]}</div>}</div>{b["카테고리"]&&<span style={{fontSize:10,color:'var(--muted)'}}>{b["카테고리"]}</span>}</div>)}{data.length===0&&<div className="empty"><div className="ei">🪣</div>버킷리스트를 채워보세요</div>}</div>
+  const [showAdd, setShowAdd] = useState(false)
+  const [editItem, setEditItem] = useState(null)
+  const SEASONS = ["1학기","여름방학","2학기","겨울방학","재학 중","졸업 전"]
+  const CATS = ["여행","경험","학습","스펙","관계"]
+  const [form, setForm] = useState({"항목":"","카테고리":"경험","시즌":"재학 중","완료":false,"메모":""})
+  const done = data.filter(b=>b["완료"]).length
+  const toggle = id=>setData(prev=>prev.map(b=>b.id===id?{...b,완료:!b["완료"]}:b))
+
+  const openEdit=(item)=>{setForm({...item});setEditItem(item);setShowAdd(true)}
+  const save=()=>{
+    if(!form["항목"])return
+    if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false);setEditItem(null)
+  }
+  const del=id=>setData(prev=>prev.filter(x=>x.id!==id))
+  return (
+    <>
+      <div className="card">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+          <div className="ct" style={{margin:0}}>🪣 버킷리스트</div>
+          <div style={{display:'flex',gap:8,alignItems:'center'}}>
+            <span style={{fontSize:10,color:'var(--muted)'}}>{done}/{data.length} 완료</span>
+            <button className="add-btn" onClick={()=>{setForm({"항목":"","카테고리":"경험","시즌":"재학 중","완료":false,"메모":""});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
+          </div>
+        </div>
+        <div style={{height:4,background:'var(--surface2)',borderRadius:2,marginBottom:12,overflow:'hidden'}}>
+          <div style={{height:'100%',width:(data.length>0?done/data.length*100:0)+"%",background:'var(--success)',borderRadius:2,transition:'width 0.5s'}}/>
+        </div>
+        {data.map(b=>(
+          <div key={b.id} className="bi">
+            <div className={"cb"+(b["완료"]?" dn":"")} onClick={()=>toggle(b.id)}>{b["완료"]&&"✓"}</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:12,fontWeight:500,textDecoration:b["완료"]?"line-through":"none",opacity:b["완료"]?0.5:1}}>{b["항목"]}</div>
+              <div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:6}}>
+                {b["시즌"]&&<span>{b["시즌"]}</span>}
+                {b["카테고리"]&&<span>· {b["카테고리"]}</span>}
+              </div>
+            </div>
+            <button className="edit-btn" onClick={()=>openEdit(b)}>✏️</button>
+            <button className="del-btn" onClick={()=>del(b.id)}>×</button>
+          </div>
+        ))}
+        {data.length===0&&<div className="empty"><div className="ei">🪣</div>버킷리스트를 채워보세요</div>}
+      </div>
+      {showAdd&&(
+        <Modal title={editItem?"🪣 버킷 수정":"🪣 버킷 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
+          <div className="field"><label>항목 *</label><input value={form["항목"]} onChange={e=>setForm(f=>({...f,"항목":e.target.value}))} placeholder="예: 교환학생 가기"/></div>
+          <SelectWithEtc label="카테고리" value={form["카테고리"]} onChange={v=>setForm(f=>({...f,"카테고리":v}))} options={CATS}/>
+          <div className="field"><label>시즌</label><select value={form["시즌"]} onChange={e=>setForm(f=>({...f,"시즌":e.target.value}))}>{SEASONS.map(s=><option key={s}>{s}</option>)}</select></div>
+          <div className="field"><label>메모</label><textarea rows={2} value={form["메모"]} onChange={e=>setForm(f=>({...f,"메모":e.target.value}))} placeholder="추가 메모..."/></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
 }
 
-function Teamwork({ data }) {
-  const sc={"준비":"var(--muted)","진행 중":"var(--warn)","완료":"var(--success)"}
-  return <div className="card"><div className="ct">🤝 팀플 아카이브</div>{data.map(t=><div key={t.id} className="ai"><div style={{flex:1}}><div style={{fontWeight:500,fontSize:12}}>{t["프로젝트명"]}</div>{t["내 역할"]&&<div style={{fontSize:10,color:'var(--muted)'}}>내 역할: {t["내 역할"]}</div>}</div>{t["상태"]&&<span className="tag" style={{background:(sc[t["상태"]])+"22",color:sc[t["상태"]],fontSize:10,padding:'2px 8px'}}>{t["상태"]}</span>}{t["마감일"]&&<span className="dd" style={{background:'var(--surface2)',color:'var(--muted)'}}>{dday(t["마감일"])}</span>}</div>)}{data.length===0&&<div className="empty"><div className="ei">🤝</div>팀플을 추가해주세요</div>}</div>
+// ── 팀플 아카이브 ─────────────────────────────────────────────────────────────
+function Teamwork({ data, setData }) {
+  const [showAdd, setShowAdd] = useState(false)
+  const [editItem, setEditItem] = useState(null)
+  const STATUS = ["준비","진행 중","완료"]
+  const [form, setForm] = useState({"프로젝트명":"","상태":"진행 중","내 역할":"","마감일":"","팀원":"","메모":""})
+  const sc = {"준비":"var(--muted)","진행 중":"var(--warn)","완료":"var(--success)"}
+
+  const openEdit=(item)=>{setForm({...item});setEditItem(item);setShowAdd(true)}
+  const save=()=>{
+    if(!form["프로젝트명"])return
+    if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
+    setShowAdd(false);setEditItem(null)
+  }
+  const del=id=>setData(prev=>prev.filter(x=>x.id!==id))
+  return (
+    <>
+      <div className="card">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+          <div className="ct" style={{margin:0}}>🤝 팀플 아카이브</div>
+          <button className="add-btn" onClick={()=>{setForm({"프로젝트명":"","상태":"진행 중","내 역할":"","마감일":"","팀원":"","메모":""});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
+        </div>
+        {data.map(t=>(
+          <div key={t.id} className="ai">
+            <div style={{flex:1}}>
+              <div style={{fontWeight:500,fontSize:12}}>{t["프로젝트명"]}</div>
+              <div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:6}}>
+                {t["내 역할"]&&<span>내 역할: {t["내 역할"]}</span>}
+                {t["팀원"]&&<span>· 팀원: {t["팀원"]}</span>}
+              </div>
+              {t["마감일"]&&<div style={{fontSize:10,color:'var(--muted)',marginTop:1}}>마감: {fmtDate(t["마감일"])}</div>}
+            </div>
+            {t["상태"]&&<span className="tag" style={{background:(sc[t["상태"]])+"22",color:sc[t["상태"]],fontSize:10,padding:'2px 8px'}}>{t["상태"]}</span>}
+            {t["마감일"]&&<span className="dd" style={{background:'var(--surface2)',color:'var(--muted)'}}>{dday(t["마감일"])}</span>}
+            <button className="edit-btn" onClick={()=>openEdit(t)}>✏️</button>
+            <button className="del-btn" onClick={()=>del(t.id)}>×</button>
+          </div>
+        ))}
+        {data.length===0&&<div className="empty"><div className="ei">🤝</div>팀플을 추가해주세요</div>}
+      </div>
+      {showAdd&&(
+        <Modal title={editItem?"🤝 팀플 수정":"🤝 팀플 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
+          <div className="field"><label>프로젝트명 *</label><input value={form["프로젝트명"]} onChange={e=>setForm(f=>({...f,"프로젝트명":e.target.value}))} placeholder="예: 캡스톤 디자인"/></div>
+          <div className="field"><label>상태</label><select value={form["상태"]} onChange={e=>setForm(f=>({...f,"상태":e.target.value}))}>{STATUS.map(s=><option key={s}>{s}</option>)}</select></div>
+          <div className="field"><label>내 역할</label><input value={form["내 역할"]} onChange={e=>setForm(f=>({...f,"내 역할":e.target.value}))} placeholder="예: 백엔드 개발"/></div>
+          <div className="field"><label>팀원</label><input value={form["팀원"]} onChange={e=>setForm(f=>({...f,"팀원":e.target.value}))} placeholder="예: 김철수, 이영희"/></div>
+          <div className="field"><label>마감일</label><input type="date" value={form["마감일"]} onChange={e=>setForm(f=>({...f,"마감일":e.target.value}))}/></div>
+          <div className="field"><label>메모</label><textarea rows={2} value={form["메모"]} onChange={e=>setForm(f=>({...f,"메모":e.target.value}))} placeholder="자료 링크, 회의록 등..."/></div>
+          <div className="btn-row">
+            <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
+            <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  )
 }
 
-const VIEWS=[{id:"home",icon:"⚡",label:"홈"},{id:"schedule",icon:"🗓",label:"시간표"},{id:"todo",icon:"📋",label:"할 일"},{id:"grades",icon:"📊",label:"성적"},{id:"specs",icon:"🏆",label:"스펙"},{id:"people",icon:"👥",label:"인맥"},{id:"records",icon:"📚",label:"기록"},{id:"bucket",icon:"🪣",label:"버킷"},{id:"team",icon:"🤝",label:"팀플"},{id:"links",icon:"🔗",label:"링크"}]
+// ── 메인 ──────────────────────────────────────────────────────────────────────
+const VIEWS=[
+  {id:"home",icon:"⚡",label:"홈"},
+  {id:"schedule",icon:"🗓",label:"시간표"},
+  {id:"todo",icon:"📋",label:"할 일"},
+  {id:"grades",icon:"📊",label:"성적"},
+  {id:"specs",icon:"🏆",label:"스펙"},
+  {id:"people",icon:"👥",label:"인맥"},
+  {id:"records",icon:"📚",label:"기록"},
+  {id:"bucket",icon:"🪣",label:"버킷"},
+  {id:"team",icon:"🤝",label:"팀플"},
+  {id:"links",icon:"🔗",label:"링크"},
+]
 
 export default function App() {
   const [view,setView]=useState("home")
@@ -497,13 +980,13 @@ export default function App() {
   const [exams,setExams]=useStorage("exams",INIT.exams)
   const [grades,setGrades]=useStorage("grades",INIT.grades)
   const [bookmarks,setBookmarks]=useStorage("bmarks",INIT.bookmarks)
-  const [specs]=useStorage("specs",INIT.specs)
-  const [people]=useStorage("people",INIT.people)
-  const [records]=useStorage("records",INIT.records)
+  const [specs,setSpecs]=useStorage("specs",INIT.specs)
+  const [people,setPeople]=useStorage("people",INIT.people)
+  const [records,setRecords]=useStorage("records",INIT.records)
   const [buckets,setBuckets]=useStorage("buckets",INIT.buckets)
-  const [teamwork]=useStorage("teamwork",INIT.teamwork)
+  const [teamwork,setTeamwork]=useStorage("teamwork",INIT.teamwork)
 
-  const urgent=assignments.filter(a=>{const d=a["데드라인"];if(!d)return false;const df=Math.ceil((new Date(d)-today)/86400000);return df>=0&&df<=3&&a["진행상황"]!=="제출 완료"})
+  const urgent=assignments.filter(a=>{const d=a["데드라인"];if(!d)return false;const df=Math.ceil((new Date(d)-today)/86400000);return df>=0&&df<=3&&a["진행상황"]!=="완료"})
   const upEx=exams.filter(x=>x["일시"]&&new Date(x["일시"])>=today).length
   const v=VIEWS.find(x=>x.id===view)
 
@@ -519,19 +1002,20 @@ export default function App() {
           <div className="hdr">
             <div>
               <div className="htitle">{v.icon} {v.label}</div>
-              <div className="hdate">{today.getFullYear()}년 {MONTHS[today.getMonth()]} {today.getDate()}일 {DAYS[today.getDay()]}요일</div>
+              <div className="hdate">{thisYear}년 {MONTHS[today.getMonth()]} {today.getDate()}일 {DAYS[today.getDay()]}요일</div>
             </div>
             <div style={{display:'flex',gap:6}}>
               {urgent.length>0&&<span className="tag" style={{background:'rgba(255,179,71,0.15)',color:'var(--warn)'}}>⚠️ 마감 임박 {urgent.length}개</span>}
               {upEx>0&&<span className="tag" style={{background:'rgba(255,95,122,0.15)',color:'var(--danger)'}}>📝 예정 시험 {upEx}개</span>}
             </div>
           </div>
+
           {view==="home"&&<>
             <div className="g4">
               <div className="sc"><div className="sv" style={{color:'var(--warn)'}}>{urgent.length}</div><div className="sl">마감 임박 과제</div></div>
               <div className="sc"><div className="sv" style={{color:'var(--danger)'}}>{upEx}</div><div className="sl">예정된 시험</div></div>
               <div className="sc"><div className="sv" style={{color:'var(--accent)'}}>{assignments.filter(a=>a["진행상황"]==="진행 중").length}</div><div className="sl">진행 중 과제</div></div>
-              <div className="sc"><div className="sv" style={{color:'var(--success)'}}>{assignments.filter(a=>a["진행상황"]==="제출 완료").length}</div><div className="sl">완료된 과제</div></div>
+              <div className="sc"><div className="sv" style={{color:'var(--success)'}}>{assignments.filter(a=>a["진행상황"]==="완료").length}</div><div className="sl">완료된 과제</div></div>
             </div>
             <div className="g2">
               <Calendar assignments={assignments} exams={exams}/>
@@ -545,11 +1029,11 @@ export default function App() {
           {view==="schedule"&&<Timetable data={timetable} setData={setTimetable}/>}
           {view==="todo"&&<div className="g2"><Assignments data={assignments} setData={setAssignments} courses={timetable}/><Exams data={exams} setData={setExams} courses={timetable}/></div>}
           {view==="grades"&&<Grades data={grades} setData={setGrades}/>}
-          {view==="specs"&&<Specs data={specs}/>}
-          {view==="people"&&<People data={people}/>}
-          {view==="records"&&<Records data={records}/>}
+          {view==="specs"&&<Specs data={specs} setData={setSpecs}/>}
+          {view==="people"&&<People data={people} setData={setPeople}/>}
+          {view==="records"&&<Records data={records} setData={setRecords}/>}
           {view==="bucket"&&<Bucket data={buckets} setData={setBuckets}/>}
-          {view==="team"&&<Teamwork data={teamwork}/>}
+          {view==="team"&&<Teamwork data={teamwork} setData={setTeamwork}/>}
           {view==="links"&&<Bookmarks data={bookmarks} setData={setBookmarks}/>}
         </main>
       </div>
