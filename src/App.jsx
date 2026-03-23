@@ -9,20 +9,19 @@ function useStorage(key, init) {
   return [val, setVal]
 }
 
-// ── 초기 데이터 없음 (빈 상태로 시작) ─────────────────────────────────────────
 const INIT = {
   timetable: [],
   assignments: [],
   grades: [],
   bookmarks: [
-    { id:1, "사이트명":"YouTube", "URL":"https://youtube.com", "카테고리":"기본", "아이콘":"https://www.youtube.com/favicon.ico" },
-    { id:2, "사이트명":"에브리타임", "URL":"https://everytime.kr", "카테고리":"기본", "아이콘":"https://everytime.kr/favicon.ico" },
-    { id:3, "사이트명":"네이버 사전", "URL":"https://dict.naver.com", "카테고리":"기본", "아이콘":"https://dict.naver.com/favicon.ico" },
-    { id:4, "사이트명":"파파고", "URL":"https://papago.naver.com", "카테고리":"기본", "아이콘":"https://papago.naver.com/favicon.ico" },
-    { id:5, "사이트명":"네이버 지도", "URL":"https://map.naver.com", "카테고리":"기본", "아이콘":"https://map.naver.com/favicon.ico" },
-    { id:6, "사이트명":"서울과기대 포털", "URL":"https://portal.seoultech.ac.kr", "카테고리":"학교", "아이콘":"https://portal.seoultech.ac.kr/favicon.ico" },
-    { id:7, "사이트명":"통합정보시스템", "URL":"https://suis.seoultech.ac.kr", "카테고리":"학교", "아이콘":"https://suis.seoultech.ac.kr/favicon.ico" },
-    { id:8, "사이트명":"수강신청", "URL":"https://for-s.seoultech.ac.kr", "카테고리":"수강신청", "아이콘":"https://for-s.seoultech.ac.kr/favicon.ico" },
+    { id:1, "사이트명":"YouTube", "URL":"https://youtube.com", "카테고리":"기본" },
+    { id:2, "사이트명":"에브리타임", "URL":"https://everytime.kr", "카테고리":"기본" },
+    { id:3, "사이트명":"네이버 사전", "URL":"https://dict.naver.com", "카테고리":"기본" },
+    { id:4, "사이트명":"파파고", "URL":"https://papago.naver.com", "카테고리":"기본" },
+    { id:5, "사이트명":"네이버 지도", "URL":"https://map.naver.com", "카테고리":"기본" },
+    { id:6, "사이트명":"서울과기대 포털", "URL":"https://portal.seoultech.ac.kr", "카테고리":"학교" },
+    { id:7, "사이트명":"통합정보시스템", "URL":"https://suis.seoultech.ac.kr", "카테고리":"학교" },
+    { id:8, "사이트명":"수강신청", "URL":"https://for-s.seoultech.ac.kr", "카테고리":"수강신청" },
   ],
   exams: [],
   specs: [],
@@ -46,16 +45,17 @@ function dday(s) {
   if (d === 0) return "D-DAY"
   return d > 0 ? "D-"+d : "D+"+Math.abs(d)
 }
-function isPast(s) {
-  if (!s) return false
-  return new Date(s) < today
-}
-function gpa(g) {
-  return {"A+":4.5,"A":4.0,"B+":3.5,"B":3.0,"C+":2.5,"C":2.0,"D+":1.5,"D":1.0,"F":0}[g] ?? null
-}
-function fmtDate(s) {
-  if (!s) return ""
-  return s.slice(0,10)
+function isPast(s) { if (!s) return false; return new Date(s) < today }
+function gpa(g) { return {"A+":4.5,"A":4.0,"B+":3.5,"B":3.0,"C+":2.5,"C":2.0,"D+":1.5,"D":1.0,"F":0}[g] ?? null }
+function fmtDate(s) { if (!s) return ""; return s.slice(0,10) }
+
+// favicon from URL
+function getFavicon(url) {
+  try {
+    const u = url.startsWith("http") ? url : "https://"+url
+    const origin = new URL(u).origin
+    return `https://www.google.com/s2/favicons?domain=${origin}&sz=64`
+  } catch { return null }
 }
 
 const CC = [
@@ -90,17 +90,20 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .ct{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+/* timetable */
 .tth{display:grid;grid-template-columns:40px repeat(7,1fr)}
 .ttd{text-align:center;padding:5px 2px;font-size:10px;font-weight:600;color:var(--muted)}
 .ttd.tc{color:var(--accent)}
-.ttr{display:grid;grid-template-columns:40px repeat(7,1fr);border-top:1px solid var(--border);min-height:32px}
+.ttr{display:grid;grid-template-columns:40px repeat(7,1fr);border-top:1px solid var(--border);height:32px}
 .ttt{font-size:9px;color:var(--muted);padding:3px 5px 0 0;text-align:right}
-.ttc{border-left:1px solid var(--border);position:relative}
-.ttcls{position:absolute;left:2px;right:2px;border-radius:5px;padding:3px 5px;font-size:9px;font-weight:600;line-height:1.3;overflow:hidden;z-index:1;cursor:pointer}
+.ttc{border-left:1px solid var(--border);position:relative;overflow:visible}
+.ttcls{position:absolute;left:2px;right:2px;border-radius:5px;padding:3px 5px;font-size:9px;font-weight:600;line-height:1.3;overflow:hidden;z-index:2;cursor:pointer}
+/* items */
 .ai{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .ai:last-child{border-bottom:none}
 .sd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .dd{margin-left:auto;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+/* calendar */
 .cg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .cdh{text-align:center;font-size:9px;color:var(--muted);padding:3px;font-weight:600}
 .cd{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:3px;font-size:11px;cursor:pointer;transition:background .1s}
@@ -108,13 +111,17 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .cd.td{background:var(--accent);color:#fff;font-weight:700}
 .cd.om{opacity:.2}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--accent2);margin-top:1px}
+/* grades */
 .gw{margin-bottom:9px}
 .gl{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
 .gt{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
 .gf{height:100%;border-radius:3px;transition:width 1s ease}
+/* bookmarks */
 .bmg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .bmi{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px;cursor:pointer;transition:all .2s;text-decoration:none;display:block;position:relative}
 .bmi:hover{border-color:var(--accent);transform:translateY(-2px)}
+.fav{width:24px;height:24px;border-radius:5px;object-fit:contain;display:block;margin-bottom:5px}
+/* people */
 .pc{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border)}
 .pc:last-child{border-bottom:none}
 .av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
@@ -159,22 +166,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .edit-btn{width:22px;height:22px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .edit-btn:hover{background:rgba(124,106,255,0.15);color:var(--accent)}
 .home-scroll{max-height:320px;overflow-y:auto}
-/* favicon img */
-.fav-img{width:20px;height:20px;border-radius:4px;object-fit:contain;background:var(--surface2)}
+.pass-badge{padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 `
 
-// ── Favicon 컴포넌트 ──────────────────────────────────────────────────────────
-function FavIcon({ url, fallback }) {
-  const [err, setErr] = useState(false)
-  // if url looks like a full http URL use it directly, otherwise treat as emoji/text
-  const isUrl = url && url.startsWith("http")
-  if (!isUrl || err) return <span style={{fontSize:18}}>{fallback||"🌐"}</span>
-  return <img src={url} className="fav-img" onError={()=>setErr(true)} alt=""/>
-}
-
-// ── Modal ─────────────────────────────────────────────────────────────────────
 function Modal({ title, onClose, children }) {
   return (
     <div className="overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
@@ -189,7 +185,6 @@ function Modal({ title, onClose, children }) {
   )
 }
 
-// ── 기타 입력 helper ──────────────────────────────────────────────────────────
 function SelectWithEtc({ label, value, onChange, options }) {
   const isEtc = value && !options.includes(value)
   const [custom, setCustom] = useState(isEtc ? value : '')
@@ -212,11 +207,20 @@ function SelectWithEtc({ label, value, onChange, options }) {
 }
 
 // ── 시간표 ────────────────────────────────────────────────────────────────────
+// Fix: 시간 블록 높이를 분 단위까지 정확하게 계산 (32px = 1시간)
+function timeToMinutes(t) {
+  const [h, m] = (t||"0:0").split(":").map(Number)
+  return h * 60 + (m||0)
+}
+
 function Timetable({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
   const [detail, setDetail] = useState(null)
   const [form, setForm] = useState({"강의명":"","요일":[],"시작 시간":"09:00","종료 시간":"10:30","강의실":"","교수님":""})
-  const hrs = Array.from({length:15},(_,i)=>i+8)
+  const PX_PER_HOUR = 32
+  const START_HOUR = 8
+  const END_HOUR = 23 // 22:xx까지 표시하려면 23행 필요
+  const hrs = Array.from({length: END_HOUR - START_HOUR}, (_, i) => i + START_HOUR)
   const days = ["월","화","수","목","금","토","일"]
   const td = DAYS[today.getDay()]
   const cm={};let ci=0
@@ -227,7 +231,7 @@ function Timetable({ data, setData }) {
     const sh = parseInt(form["시작 시간"].split(":")[0])
     const eh = parseInt(form["종료 시간"].split(":")[0])
     if (sh < 8 || eh > 22) { alert("⚠️ 시간표는 08:00 ~ 22:00 사이만 등록 가능해요!"); return }
-    if (eh <= sh) { alert("⚠️ 종료 시간이 시작 시간보다 늦어야 해요!"); return }
+    if (timeToMinutes(form["종료 시간"]) <= timeToMinutes(form["시작 시간"])) { alert("⚠️ 종료 시간이 시작 시간보다 늦어야 해요!"); return }
     if (!form["강의명"] || form["요일"].length===0) { alert("강의명과 요일을 입력해주세요!"); return }
     setData(prev=>[...prev,{...form,id:newId(prev)}])
     setForm({"강의명":"","요일":[],"시작 시간":"09:00","종료 시간":"10:30","강의실":"","교수님":""})
@@ -243,16 +247,43 @@ function Timetable({ data, setData }) {
           <button className="add-btn" onClick={()=>setShowAdd(true)}>+ 수업 추가</button>
         </div>
         <div style={{minWidth:520}}>
+          {/* 헤더 */}
           <div className="tth"><div/>{days.map(d=><div key={d} className={"ttd"+(d===td?" tc":"")}>{d}</div>)}</div>
-          {hrs.map(h=>(
-            <div key={h} className="ttr">
-              <div className="ttt">{h}:00</div>
-              {days.map(d=>{
-                const x=cls.find(c=>{const ds=Array.isArray(c["요일"])?c["요일"]:[c["요일"]||""];return ds.includes(d)&&parseInt((c["시작 시간"]||"0").split(":")[0])===h})
-                return <div key={d} className="ttc">{x&&<div className="ttcls" style={{background:x.c.bg,borderLeft:"3px solid "+x.c.bl,color:x.c.t,top:0,height:((parseInt((x["종료 시간"]||"0").split(":")[0])-parseInt((x["시작 시간"]||"0").split(":")[0]))*32)+"px"}} onClick={()=>setDetail(x)}><div style={{fontWeight:700}}>{x["강의명"]}</div><div style={{opacity:.7,fontSize:8}}>{x["강의실"]}</div></div>}</div>
-              })}
-            </div>
-          ))}
+          {/* 그리드: position:relative 컨테이너 */}
+          <div style={{position:'relative'}}>
+            {/* 시간 눈금 행들 */}
+            {hrs.map(h=>(
+              <div key={h} className="ttr">
+                <div className="ttt">{h}:00</div>
+                {days.map(d=><div key={d} className="ttc"/>)}
+              </div>
+            ))}
+            {/* 강의 블록들: absolute 오버레이 */}
+            {cls.map(x=>{
+              const daysCols = Array.isArray(x["요일"]) ? x["요일"] : [x["요일"]||""]
+              return daysCols.map(d=>{
+                const dayIdx = days.indexOf(d)
+                if (dayIdx < 0) return null
+                const startMin = timeToMinutes(x["시작 시간"])
+                const endMin = timeToMinutes(x["종료 시간"])
+                const top = (startMin - START_HOUR * 60) / 60 * PX_PER_HOUR
+                const height = (endMin - startMin) / 60 * PX_PER_HOUR
+                // 컬럼 위치 계산: 40px(time) + dayIdx * (1/7 of remaining)
+                const colWidth = `calc((100% - 40px) / 7)`
+                const left = `calc(40px + ${dayIdx} * (100% - 40px) / 7 + 2px)`
+                const width = `calc((100% - 40px) / 7 - 4px)`
+                return (
+                  <div key={x.id+d} className="ttcls" style={{
+                    position:'absolute', top:top+"px", left, width, height:height+"px",
+                    background:x.c.bg, borderLeft:"3px solid "+x.c.bl, color:x.c.t,
+                  }} onClick={()=>setDetail(x)}>
+                    <div style={{fontWeight:700}}>{x["강의명"]}</div>
+                    <div style={{opacity:.7,fontSize:8}}>{x["강의실"]}</div>
+                  </div>
+                )
+              })
+            })}
+          </div>
         </div>
         {data.length===0&&<div className="empty"><div className="ei">📅</div>수업을 추가해주세요</div>}
         <div style={{fontSize:10,color:'var(--muted)',marginTop:8}}>💡 수업 블록 클릭 시 상세 보기</div>
@@ -295,7 +326,6 @@ function Timetable({ data, setData }) {
 }
 
 // ── 과제 트래커 ───────────────────────────────────────────────────────────────
-// 탭: 전체 / 시작 전 / 진행 중 / 완료 / 기간 만료
 function Assignments({ data, setData, courses }) {
   const [tab, setTab] = useState("전체")
   const [showAdd, setShowAdd] = useState(false)
@@ -304,7 +334,6 @@ function Assignments({ data, setData, courses }) {
   const STATUS = ["시작 전","진행 중","완료"]
   const SUBMIT = ["온라인 제출","이메일","직접 제출"]
 
-  // 기간 만료: 데드라인 지났는데 완료 아닌 것
   const isExpired = a => a["진행상황"]!=="완료" && a["데드라인"] && isPast(a["데드라인"])
   const items = data.filter(a => {
     if (tab==="기간 만료") return isExpired(a)
@@ -313,26 +342,14 @@ function Assignments({ data, setData, courses }) {
   })
   const expiredCount = data.filter(isExpired).length
   const sc = {"시작 전":"var(--muted)","진행 중":"var(--warn)","완료":"var(--success)"}
-  const ds = d=>{
-    if(!d)return{}
-    if(d==="D-DAY")return{background:"rgba(255,95,122,0.2)",color:"var(--danger)"}
-    const n=parseInt(d.replace("D-",""))
-    if(!isNaN(n)&&n<=3)return{background:"rgba(255,179,71,0.2)",color:"var(--warn)"}
-    return{background:"var(--surface2)",color:"var(--muted)"}
-  }
+  const ds = d=>{if(!d)return{};if(d==="D-DAY")return{background:"rgba(255,95,122,0.2)",color:"var(--danger)"};const n=parseInt(d.replace("D-",""));if(!isNaN(n)&&n<=3)return{background:"rgba(255,179,71,0.2)",color:"var(--warn)"};return{background:"var(--surface2)",color:"var(--muted)"}}
 
   const openAdd = () => { setForm({"과제명":"","강의명":"","진행상황":"시작 전","제출 방법":"온라인 제출","데드라인":defaultDeadline}); setEditItem(null); setShowAdd(true) }
-  const openEdit = item => {
-    const isEtc = !SUBMIT.includes(item["제출 방법"])
-    setForm({...item,"제출 방법":isEtc?"기타":item["제출 방법"],"_기타":isEtc?item["제출 방법"]:""})
-    setEditItem(item); setShowAdd(true)
-  }
+  const openEdit = item => { setForm({...item}); setEditItem(item); setShowAdd(true) }
   const save = () => {
     if(!form["과제명"])return
-    const sm = form["제출 방법"]==="기타" ? (form["_기타"]||"기타") : form["제출 방법"]
-    const entry = {...form,"제출 방법":sm}; delete entry["_기타"]
-    if(editItem) setData(prev=>prev.map(a=>a.id===editItem.id?{...entry,id:editItem.id}:a))
-    else setData(prev=>[...prev,{...entry,id:newId(prev)}])
+    if(editItem) setData(prev=>prev.map(a=>a.id===editItem.id?{...form,id:editItem.id}:a))
+    else setData(prev=>[...prev,{...form,id:newId(prev)}])
     setShowAdd(false); setEditItem(null)
   }
   const del = id=>setData(prev=>prev.filter(a=>a.id!==id))
@@ -375,10 +392,7 @@ function Assignments({ data, setData, courses }) {
           <div className="field"><label>강의</label><select value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))}><option value="">선택 안 함</option>{courses.map(c=><option key={c.id}>{c["강의명"]}</option>)}</select></div>
           <div className="field"><label>진행상황</label><select value={form["진행상황"]} onChange={e=>setForm(f=>({...f,"진행상황":e.target.value}))}>{STATUS.map(s=><option key={s}>{s}</option>)}</select></div>
           <SelectWithEtc label="제출 방법" value={form["제출 방법"]} onChange={v=>setForm(f=>({...f,"제출 방법":v}))} options={SUBMIT}/>
-          <div className="field">
-            <label>마감일시 (yyyy-mm-ddTHH:MM, 기본값 23:59)</label>
-            <input type="datetime-local" value={form["데드라인"]} onChange={e=>setForm(f=>({...f,"데드라인":e.target.value}))}/>
-          </div>
+          <div className="field"><label>마감일시 (기본값 23:59)</label><input type="datetime-local" value={form["데드라인"]} onChange={e=>setForm(f=>({...f,"데드라인":e.target.value}))}/></div>
           <div className="btn-row">
             <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
             <button className="btn btn-primary" onClick={save}>{editItem?"저장":"추가"}</button>
@@ -444,10 +458,7 @@ function Exams({ data, setData, courses }) {
           <div className="field"><label>강의</label><select value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))}><option value="">선택 안 함</option>{courses.map(c=><option key={c.id}>{c["강의명"]}</option>)}</select></div>
           <SelectWithEtc label="시험 구분" value={form["시험 구분"]} onChange={v=>setForm(f=>({...f,"시험 구분":v}))} options={TYPES}/>
           <div className="field"><label>시험 범위</label><input value={form["시험 범위"]} onChange={e=>setForm(f=>({...f,"시험 범위":e.target.value}))} placeholder="예: 1~5장"/></div>
-          <div className="field">
-            <label>일시 (오늘 이후만 가능, 기본값 23:59)</label>
-            <input type="datetime-local" min={todayStr+"T00:00"} value={form["일시"]} onChange={e=>setForm(f=>({...f,"일시":e.target.value}))}/>
-          </div>
+          <div className="field"><label>일시 (오늘 이후만 가능)</label><input type="datetime-local" min={todayStr+"T00:00"} value={form["일시"]} onChange={e=>setForm(f=>({...f,"일시":e.target.value}))}/></div>
           <div className="field"><label>반복</label><select value={form["반복"]} onChange={e=>setForm(f=>({...f,"반복":e.target.value}))}>{REPEAT.map(r=><option key={r}>{r}</option>)}</select></div>
           <div className="btn-row">
             <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
@@ -470,7 +481,6 @@ function Grades({ data, setData }) {
   const tc = fil.reduce((s,i)=>s+(Number(i["학점 수"])||0),0)
   const ws = fil.reduce((s,i)=>{const g=gpa(i["취득 등급"]);return s+(g!==null?g*(Number(i["학점 수"])||0):0)},0)
   const avg = tc>0?(ws/tc).toFixed(2):"-"
-
   const openEdit = item=>{setForm({...item});setEditItem(item);setShowAdd(true)}
   const save = ()=>{
     if(!form["강의명"])return
@@ -479,7 +489,6 @@ function Grades({ data, setData }) {
     setShowAdd(false);setEditItem(null)
   }
   const del = id=>setData(prev=>prev.filter(x=>x.id!==id))
-
   return (
     <>
       <div className="card">
@@ -511,7 +520,7 @@ function Grades({ data, setData }) {
           <div className="field"><label>강의명 *</label><input value={form["강의명"]} onChange={e=>setForm(f=>({...f,"강의명":e.target.value}))} placeholder="예: 알고리즘"/></div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
             <div className="field"><label>학점 수</label><input type="number" min="1" max="6" value={form["학점 수"]} onChange={e=>setForm(f=>({...f,"학점 수":Number(e.target.value)}))}/></div>
-            <div className="field"><label>학기 (예: {thisYear}-1)</label><input value={form["학기"]} onChange={e=>setForm(f=>({...f,"학기":e.target.value}))} placeholder={thisYear+"-1"}/></div>
+            <div className="field"><label>학기</label><input value={form["학기"]} onChange={e=>setForm(f=>({...f,"학기":e.target.value}))} placeholder={thisYear+"-1"}/></div>
           </div>
           <div className="field"><label>취득 등급</label><select value={form["취득 등급"]} onChange={e=>setForm(f=>({...f,"취득 등급":e.target.value}))}>{["A+","A","B+","B","C+","C","D+","D","F"].map(g=><option key={g}>{g}</option>)}</select></div>
           <div className="btn-row">
@@ -524,22 +533,25 @@ function Grades({ data, setData }) {
   )
 }
 
-// ── 북마크 (favicon 사용) ─────────────────────────────────────────────────────
+// ── 북마크 (Google Favicon API) ───────────────────────────────────────────────
+function FavIcon({ url, name }) {
+  const [err, setErr] = useState(false)
+  const src = getFavicon(url)
+  if (!src || err) return <span style={{fontSize:20,display:'block',marginBottom:5}}>🌐</span>
+  return <img src={src} className="fav" onError={()=>setErr(true)} alt={name}/>
+}
+
 function Bookmarks({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
-  const [form, setForm] = useState({"사이트명":"","URL":"","카테고리":"커스텀","아이콘":""})
-
+  const [form, setForm] = useState({"사이트명":"","URL":"","카테고리":"커스텀"})
   const save = ()=>{
     if(!form["사이트명"]||!form["URL"])return
     const url = form["URL"].startsWith("http") ? form["URL"] : "https://"+form["URL"]
-    // auto favicon if not manually set
-    const icon = form["아이콘"] || (new URL(url).origin+"/favicon.ico")
-    setData(prev=>[...prev,{...form,"URL":url,"아이콘":icon,id:newId(prev)}])
-    setForm({"사이트명":"","URL":"","카테고리":"커스텀","아이콘":""})
+    setData(prev=>[...prev,{...form,"URL":url,id:newId(prev)}])
+    setForm({"사이트명":"","URL":"","카테고리":"커스텀"})
     setShowAdd(false)
   }
   const del=(e,id)=>{e.preventDefault();e.stopPropagation();setData(prev=>prev.filter(x=>x.id!==id))}
-
   return (
     <>
       <div className="card">
@@ -551,9 +563,7 @@ function Bookmarks({ data, setData }) {
           {data.map(b=>(
             <a key={b.id} href={b["URL"]||"#"} target="_blank" rel="noreferrer" className="bmi">
               <button className="del-btn" onClick={e=>del(e,b.id)} style={{position:'absolute',top:4,right:4,opacity:.5}}>×</button>
-              <div style={{marginBottom:6}}>
-                <FavIcon url={b["아이콘"]} fallback={b["_emoji"]}/>
-              </div>
+              <FavIcon url={b["URL"]} name={b["사이트명"]}/>
               <div style={{fontSize:11,fontWeight:500,color:'var(--text)'}}>{b["사이트명"]}</div>
               <div style={{fontSize:9,color:'var(--muted)',marginTop:1}}>{b["카테고리"]||""}</div>
             </a>
@@ -564,10 +574,7 @@ function Bookmarks({ data, setData }) {
         <Modal title="🔗 북마크 추가" onClose={()=>setShowAdd(false)}>
           <div className="field"><label>사이트명 *</label><input value={form["사이트명"]} onChange={e=>setForm(f=>({...f,"사이트명":e.target.value}))} placeholder="예: GitHub"/></div>
           <div className="field"><label>URL *</label><input value={form["URL"]} onChange={e=>setForm(f=>({...f,"URL":e.target.value}))} placeholder="예: github.com"/></div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-            <div className="field"><label>아이콘 (이모지 또는 비워두면 자동)</label><input value={form["아이콘"]} onChange={e=>setForm(f=>({...f,"아이콘":e.target.value}))} placeholder="🔗 또는 비워두기"/></div>
-            <div className="field"><label>카테고리</label><select value={form["카테고리"]} onChange={e=>setForm(f=>({...f,"카테고리":e.target.value}))}>{["기본","학교","수강신청","커스텀"].map(c=><option key={c}>{c}</option>)}</select></div>
-          </div>
+          <div className="field"><label>카테고리</label><select value={form["카테고리"]} onChange={e=>setForm(f=>({...f,"카테고리":e.target.value}))}>{["기본","학교","수강신청","커스텀"].map(c=><option key={c}>{c}</option>)}</select></div>
           <div className="btn-row">
             <button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>취소</button>
             <button className="btn btn-primary" onClick={save}>추가</button>
@@ -607,20 +614,36 @@ function Calendar({ assignments, exams }) {
 }
 
 // ── 스펙 관리 ─────────────────────────────────────────────────────────────────
-// 카테고리: 공인 시험 / 자격증 / 수상 기록 / 동아리 → 동아리 제거, 대회→수상 기록
-// 동아리: 1차/2차, Pass/Fail 방식
+// 카테고리: 공인 시험 / 자격증 / 수상 기록 / 기타
+// 동아리 없음
+// 상태 없음 → 만료 기간으로 대체 (없으면 표시 안 함)
+// 점수 + pass/fail 동시 입력 가능
 function Specs({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
   const [editItem, setEditItem] = useState(null)
-  const CATS = ["공인 시험","자격증","수상 기록","동아리"]
-  const STATUS = ["준비 중","취득 완료","진행 중","만료 임박","만료"]
-  const [form, setForm] = useState({"스펙명":"","카테고리":"공인 시험","현재 점수":"","목표 점수":"","상태":"준비 중","단계":"","결과":"","메모":""})
-  const sc = {"준비 중":"var(--warn)","취득 완료":"var(--success)","진행 중":"var(--accent3)","만료 임박":"var(--danger)","만료":"var(--muted)"}
-  const isClub = form["카테고리"]==="동아리"
-  const isScore = ["공인 시험","자격증"].includes(form["카테고리"])
+  // 카테고리별 필드 설정
+  // 공인 시험 / 자격증: 점수, pass/fail, 만료기간
+  // 수상 기록: 수상 내용, 주최기관, 수상날짜 (만료없음)
+  // 기타: 점수, pass/fail, 만료기간
+  const CATS = ["공인 시험","자격증","수상 기록"]
+  const PASS_FAIL = ["","Pass","Fail","대기 중"]
+
+  const emptyForm = {"스펙명":"","카테고리":"공인 시험","현재 점수":"","목표 점수":"","pass_fail":"","만료일":"","수상 내용":"","주최 기관":"","수상 날짜":"","메모":""}
+  const [form, setForm] = useState(emptyForm)
+
+  const isCert = ["공인 시험","자격증"].includes(form["카테고리"]) || (!CATS.includes(form["카테고리"]))
   const isAward = form["카테고리"]==="수상 기록"
 
-  const openEdit = item=>{setForm({...item,"단계":item["단계"]||"","결과":item["결과"]||""});setEditItem(item);setShowAdd(true)}
+  // D-day for expiry
+  const expiryBadge = (d) => {
+    if (!d) return null
+    const diff = Math.ceil((new Date(d) - today) / 86400000)
+    if (diff < 0) return {label:"만료됨", color:"var(--danger)"}
+    if (diff <= 90) return {label:`만료 ${diff}일 전`, color:"var(--warn)"}
+    return {label:fmtDate(d)+" 까지", color:"var(--muted)"}
+  }
+
+  const openEdit = item=>{setForm({...emptyForm,...item});setEditItem(item);setShowAdd(true)}
   const save = ()=>{
     if(!form["스펙명"])return
     if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
@@ -634,76 +657,75 @@ function Specs({ data, setData }) {
       <div className="card">
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
           <div className="ct" style={{margin:0}}>🏆 스펙 관리</div>
-          <button className="add-btn" onClick={()=>{setForm({"스펙명":"","카테고리":"공인 시험","현재 점수":"","목표 점수":"","상태":"준비 중","단계":"","결과":"","메모":""});setEditItem(null);setShowAdd(true)}}>+ 추가</button>
+          <button className="add-btn" onClick={()=>{setForm(emptyForm);setEditItem(null);setShowAdd(true)}}>+ 추가</button>
         </div>
-        {data.map(s=>(
-          <div key={s.id} className="si">
-            <div className="sh">
-              <div style={{fontSize:12,fontWeight:500}}>{s["스펙명"]}</div>
-              <div style={{display:'flex',gap:6,alignItems:'center'}}>
-                <span className="tag" style={{background:(sc[s["상태"]]||"var(--muted)")+"22",color:sc[s["상태"]]||"var(--muted)",fontSize:9,padding:'2px 7px'}}>{s["상태"]||"기타"}</span>
-                <button className="edit-btn" onClick={()=>openEdit(s)}>✏️</button>
-                <button className="del-btn" onClick={()=>del(s.id)}>×</button>
+        {data.map(s=>{
+          const exp = expiryBadge(s["만료일"])
+          const isCertItem = s["카테고리"]!=="수상 기록"
+          return (
+            <div key={s.id} className="si">
+              <div className="sh">
+                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                  <span style={{fontSize:12,fontWeight:500}}>{s["스펙명"]}</span>
+                  <span className="tag" style={{background:'rgba(124,106,255,0.12)',color:'var(--muted)',fontSize:9,padding:'1px 6px'}}>{s["카테고리"]}</span>
+                </div>
+                <div style={{display:'flex',gap:6,alignItems:'center'}}>
+                  <button className="edit-btn" onClick={()=>openEdit(s)}>✏️</button>
+                  <button className="del-btn" onClick={()=>del(s.id)}>×</button>
+                </div>
               </div>
+              <div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:8,flexWrap:'wrap',marginTop:3,alignItems:'center'}}>
+                {/* 공인시험/자격증/기타: 점수 + pass/fail */}
+                {isCertItem&&s["현재 점수"]&&<span>현재: {s["현재 점수"]}</span>}
+                {isCertItem&&s["목표 점수"]&&<span>목표: {s["목표 점수"]}</span>}
+                {isCertItem&&s["pass_fail"]&&(
+                  <span className="pass-badge" style={{background:s["pass_fail"]==="Pass"?"rgba(77,255,180,0.15)":s["pass_fail"]==="Fail"?"rgba(255,95,122,0.15)":"rgba(255,179,71,0.15)",color:s["pass_fail"]==="Pass"?"var(--success)":s["pass_fail"]==="Fail"?"var(--danger)":"var(--warn)"}}>
+                    {s["pass_fail"]}
+                  </span>
+                )}
+                {/* 수상기록 */}
+                {!isCertItem&&s["수상 내용"]&&<span>🏅 {s["수상 내용"]}</span>}
+                {!isCertItem&&s["주최 기관"]&&<span>주최: {s["주최 기관"]}</span>}
+                {!isCertItem&&s["수상 날짜"]&&<span>{fmtDate(s["수상 날짜"])}</span>}
+                {/* 만료일 */}
+                {exp&&<span style={{color:exp.color,fontWeight:500}}>{exp.label}</span>}
+              </div>
+              {s["메모"]&&<div style={{fontSize:10,color:'var(--muted)',marginTop:3}}>{s["메모"]}</div>}
             </div>
-            <div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:8,flexWrap:'wrap'}}>
-              {s["카테고리"]&&<span>{s["카테고리"]}</span>}
-              {s["현재 점수"]&&<span>현재: {s["현재 점수"]}</span>}
-              {s["목표 점수"]&&<span>목표: {s["목표 점수"]}</span>}
-              {s["단계"]&&<span>단계: {s["단계"]}</span>}
-              {s["결과"]&&<span style={{color:s["결과"]==="Pass"?"var(--success)":"var(--danger)",fontWeight:600}}>{s["결과"]}</span>}
-              {s["수상 내용"]&&<span>🏅 {s["수상 내용"]}</span>}
-            </div>
-            {s["메모"]&&<div style={{fontSize:10,color:'var(--muted)',marginTop:3}}>{s["메모"]}</div>}
-          </div>
-        ))}
+          )
+        })}
         {data.length===0&&<div className="empty"><div className="ei">🏆</div>스펙을 추가해주세요</div>}
       </div>
+
       {showAdd&&(
         <Modal title={editItem?"🏆 스펙 수정":"🏆 스펙 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
           <div className="field"><label>스펙명 *</label><input value={form["스펙명"]} onChange={e=>setForm(f=>({...f,"스펙명":e.target.value}))} placeholder="예: TOEIC"/></div>
-          <div className="field"><label>카테고리</label>
-            <select value={form["카테고리"]} onChange={e=>setForm(f=>({...f,"카테고리":e.target.value,"현재 점수":"","목표 점수":"","단계":"","결과":"","수상 내용":""}))}>
-              {CATS.map(c=><option key={c}>{c}</option>)}
-            </select>
-          </div>
+          <SelectWithEtc label="카테고리" value={form["카테고리"]} onChange={v=>setForm(f=>({...f,"카테고리":v}))} options={CATS}/>
 
-          {isScore&&<>
+          {isCert&&<>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-              <div className="field"><label>현재 점수/등급</label><input value={form["현재 점수"]} onChange={e=>setForm(f=>({...f,"현재 점수":e.target.value}))} placeholder="820"/></div>
-              <div className="field"><label>목표 점수/등급</label><input value={form["목표 점수"]} onChange={e=>setForm(f=>({...f,"목표 점수":e.target.value}))} placeholder="900"/></div>
+              <div className="field"><label>현재 점수/등급</label><input value={form["현재 점수"]} onChange={e=>setForm(f=>({...f,"현재 점수":e.target.value}))} placeholder="예: 820"/></div>
+              <div className="field"><label>목표 점수/등급</label><input value={form["목표 점수"]} onChange={e=>setForm(f=>({...f,"목표 점수":e.target.value}))} placeholder="예: 900"/></div>
             </div>
-          </>}
-
-          {isClub&&<>
-            <div className="field"><label>현재 단계</label>
-              <select value={form["단계"]} onChange={e=>setForm(f=>({...f,"단계":e.target.value}))}>
-                <option value="">선택 안 함</option>
-                <option>1차 지원</option>
-                <option>2차 면접</option>
-                <option>최종 합격</option>
-                <option>활동 중</option>
+            <div className="field"><label>Pass / Fail</label>
+              <select value={form["pass_fail"]} onChange={e=>setForm(f=>({...f,"pass_fail":e.target.value}))}>
+                {PASS_FAIL.map(p=><option key={p} value={p}>{p||"미정"}</option>)}
               </select>
             </div>
-            <div className="field"><label>결과</label>
-              <select value={form["결과"]} onChange={e=>setForm(f=>({...f,"결과":e.target.value}))}>
-                <option value="">미정</option>
-                <option>Pass</option>
-                <option>Fail</option>
-                <option>대기 중</option>
-              </select>
+            <div className="field">
+              <label>만료일 (없으면 비워두기)</label>
+              <input type="date" value={form["만료일"]} onChange={e=>setForm(f=>({...f,"만료일":e.target.value}))}/>
             </div>
           </>}
 
           {isAward&&<>
-            <div className="field"><label>수상 내용</label><input value={form["수상 내용"]||""} onChange={e=>setForm(f=>({...f,"수상 내용":e.target.value}))} placeholder="예: 최우수상 / 장려상 / 입선"/></div>
+            <div className="field"><label>수상 내용</label><input value={form["수상 내용"]} onChange={e=>setForm(f=>({...f,"수상 내용":e.target.value}))} placeholder="예: 최우수상 / 장려상 / 입선"/></div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-              <div className="field"><label>주최 기관</label><input value={form["현재 점수"]} onChange={e=>setForm(f=>({...f,"현재 점수":e.target.value}))} placeholder="예: 과기부"/></div>
-              <div className="field"><label>수상 날짜</label><input type="date" value={form["목표 점수"]} onChange={e=>setForm(f=>({...f,"목표 점수":e.target.value}))}/></div>
+              <div className="field"><label>주최 기관</label><input value={form["주최 기관"]} onChange={e=>setForm(f=>({...f,"주최 기관":e.target.value}))} placeholder="예: 과기부"/></div>
+              <div className="field"><label>수상 날짜</label><input type="date" value={form["수상 날짜"]} onChange={e=>setForm(f=>({...f,"수상 날짜":e.target.value}))}/></div>
             </div>
           </>}
 
-          <div className="field"><label>상태</label><select value={form["상태"]} onChange={e=>setForm(f=>({...f,"상태":e.target.value}))}>{STATUS.map(s=><option key={s}>{s}</option>)}</select></div>
           <div className="field"><label>메모</label><textarea rows={2} value={form["메모"]} onChange={e=>setForm(f=>({...f,"메모":e.target.value}))} placeholder="추가 메모..."/></div>
           <div className="btn-row">
             <button className="btn btn-ghost" onClick={()=>{setShowAdd(false);setEditItem(null)}}>취소</button>
