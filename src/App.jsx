@@ -614,27 +614,29 @@ function Calendar({ assignments, exams }) {
 }
 
 // ── 스펙 관리 ─────────────────────────────────────────────────────────────────
-// 카테고리: 공인 시험 / 자격증 / 수상 기록 / 기타
-// 동아리 없음
-// 상태 없음 → 만료 기간으로 대체 (없으면 표시 안 함)
-// 점수 + pass/fail 동시 입력 가능
+// 체크박스로 점수칸 / Pass·Fail 칸 켜고 끄기
 function Specs({ data, setData }) {
   const [showAdd, setShowAdd] = useState(false)
   const [editItem, setEditItem] = useState(null)
-  // 카테고리별 필드 설정
-  // 공인 시험 / 자격증: 점수, pass/fail, 만료기간
-  // 수상 기록: 수상 내용, 주최기관, 수상날짜 (만료없음)
-  // 기타: 점수, pass/fail, 만료기간
   const CATS = ["공인 시험","자격증","수상 기록"]
-  const PASS_FAIL = ["","Pass","Fail","대기 중"]
 
-  const emptyForm = {"스펙명":"","카테고리":"공인 시험","현재 점수":"","목표 점수":"","pass_fail":"","만료일":"","수상 내용":"","주최 기관":"","수상 날짜":"","메모":""}
+  const emptyForm = {
+    "스펙명":"","카테고리":"공인 시험",
+    // 점수 섹션
+    "show_score": false, "현재 점수":"","목표 점수":"",
+    // pass/fail 섹션
+    "show_pf": false, "pass_fail":"Pass",
+    // 만료일
+    "만료일":"",
+    // 수상기록 전용
+    "수상 내용":"","주최 기관":"","수상 날짜":"",
+    "메모":"",
+  }
   const [form, setForm] = useState(emptyForm)
 
-  const isCert = ["공인 시험","자격증"].includes(form["카테고리"]) || (!CATS.includes(form["카테고리"]))
-  const isAward = form["카테고리"]==="수상 기록"
+  const isCert = form["카테고리"] !== "수상 기록"
+  const isAward = form["카테고리"] === "수상 기록"
 
-  // D-day for expiry
   const expiryBadge = (d) => {
     if (!d) return null
     const diff = Math.ceil((new Date(d) - today) / 86400000)
@@ -643,14 +645,28 @@ function Specs({ data, setData }) {
     return {label:fmtDate(d)+" 까지", color:"var(--muted)"}
   }
 
-  const openEdit = item=>{setForm({...emptyForm,...item});setEditItem(item);setShowAdd(true)}
-  const save = ()=>{
-    if(!form["스펙명"])return
-    if(editItem)setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
+  const openEdit = item => { setForm({...emptyForm,...item}); setEditItem(item); setShowAdd(true) }
+  const save = () => {
+    if (!form["스펙명"]) return
+    if (editItem) setData(prev=>prev.map(x=>x.id===editItem.id?{...form,id:editItem.id}:x))
     else setData(prev=>[...prev,{...form,id:newId(prev)}])
-    setShowAdd(false);setEditItem(null)
+    setShowAdd(false); setEditItem(null)
   }
-  const del = id=>setData(prev=>prev.filter(x=>x.id!==id))
+  const del = id => setData(prev=>prev.filter(x=>x.id!==id))
+
+  // 체크박스 토글 스타일
+  const Toggle = ({ checked, onChange, label }) => (
+    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,cursor:'pointer'}} onClick={()=>onChange(!checked)}>
+      <div style={{
+        width:18,height:18,borderRadius:5,border:'2px solid',flexShrink:0,
+        display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,
+        borderColor: checked?'var(--accent)':'var(--border2)',
+        background: checked?'rgba(124,106,255,0.2)':'transparent',
+        color:'var(--accent)',transition:'all .15s'
+      }}>{checked&&'✓'}</div>
+      <span style={{fontSize:12,color: checked?'var(--text)':'var(--muted)',fontWeight: checked?500:400}}>{label}</span>
+    </div>
+  )
 
   return (
     <>
@@ -661,7 +677,7 @@ function Specs({ data, setData }) {
         </div>
         {data.map(s=>{
           const exp = expiryBadge(s["만료일"])
-          const isCertItem = s["카테고리"]!=="수상 기록"
+          const isCertItem = s["카테고리"] !== "수상 기록"
           return (
             <div key={s.id} className="si">
               <div className="sh">
@@ -675,50 +691,76 @@ function Specs({ data, setData }) {
                 </div>
               </div>
               <div style={{fontSize:10,color:'var(--muted)',display:'flex',gap:8,flexWrap:'wrap',marginTop:3,alignItems:'center'}}>
-                {/* 공인시험/자격증/기타: 점수 + pass/fail */}
-                {isCertItem&&s["현재 점수"]&&<span>현재: {s["현재 점수"]}</span>}
-                {isCertItem&&s["목표 점수"]&&<span>목표: {s["목표 점수"]}</span>}
-                {isCertItem&&s["pass_fail"]&&(
-                  <span className="pass-badge" style={{background:s["pass_fail"]==="Pass"?"rgba(77,255,180,0.15)":s["pass_fail"]==="Fail"?"rgba(255,95,122,0.15)":"rgba(255,179,71,0.15)",color:s["pass_fail"]==="Pass"?"var(--success)":s["pass_fail"]==="Fail"?"var(--danger)":"var(--warn)"}}>
-                    {s["pass_fail"]}
-                  </span>
+                {isCertItem && s["show_score"] && s["현재 점수"] && <span>현재: <strong style={{color:'var(--text)'}}>{s["현재 점수"]}</strong></span>}
+                {isCertItem && s["show_score"] && s["목표 점수"] && <span>목표: <strong style={{color:'var(--text)'}}>{s["목표 점수"]}</strong></span>}
+                {isCertItem && s["show_pf"] && s["pass_fail"] && (
+                  <span className="pass-badge" style={{
+                    background: s["pass_fail"]==="Pass"?"rgba(77,255,180,0.15)":"rgba(255,95,122,0.15)",
+                    color: s["pass_fail"]==="Pass"?"var(--success)":"var(--danger)"
+                  }}>{s["pass_fail"]}</span>
                 )}
-                {/* 수상기록 */}
-                {!isCertItem&&s["수상 내용"]&&<span>🏅 {s["수상 내용"]}</span>}
-                {!isCertItem&&s["주최 기관"]&&<span>주최: {s["주최 기관"]}</span>}
-                {!isCertItem&&s["수상 날짜"]&&<span>{fmtDate(s["수상 날짜"])}</span>}
-                {/* 만료일 */}
-                {exp&&<span style={{color:exp.color,fontWeight:500}}>{exp.label}</span>}
+                {!isCertItem && s["수상 내용"] && <span>🏅 {s["수상 내용"]}</span>}
+                {!isCertItem && s["주최 기관"] && <span>주최: {s["주최 기관"]}</span>}
+                {!isCertItem && s["수상 날짜"] && <span>{fmtDate(s["수상 날짜"])}</span>}
+                {exp && <span style={{color:exp.color,fontWeight:500}}>{exp.label}</span>}
               </div>
-              {s["메모"]&&<div style={{fontSize:10,color:'var(--muted)',marginTop:3}}>{s["메모"]}</div>}
+              {s["메모"] && <div style={{fontSize:10,color:'var(--muted)',marginTop:3}}>{s["메모"]}</div>}
             </div>
           )
         })}
-        {data.length===0&&<div className="empty"><div className="ei">🏆</div>스펙을 추가해주세요</div>}
+        {data.length===0 && <div className="empty"><div className="ei">🏆</div>스펙을 추가해주세요</div>}
       </div>
 
-      {showAdd&&(
+      {showAdd && (
         <Modal title={editItem?"🏆 스펙 수정":"🏆 스펙 추가"} onClose={()=>{setShowAdd(false);setEditItem(null)}}>
           <div className="field"><label>스펙명 *</label><input value={form["스펙명"]} onChange={e=>setForm(f=>({...f,"스펙명":e.target.value}))} placeholder="예: TOEIC"/></div>
-          <SelectWithEtc label="카테고리" value={form["카테고리"]} onChange={v=>setForm(f=>({...f,"카테고리":v}))} options={CATS}/>
+          <SelectWithEtc label="카테고리" value={form["카테고리"]} onChange={v=>setForm(f=>({...f,"카테고리":v,"show_score":false,"show_pf":false}))} options={CATS}/>
 
-          {isCert&&<>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-              <div className="field"><label>현재 점수/등급</label><input value={form["현재 점수"]} onChange={e=>setForm(f=>({...f,"현재 점수":e.target.value}))} placeholder="예: 820"/></div>
-              <div className="field"><label>목표 점수/등급</label><input value={form["목표 점수"]} onChange={e=>setForm(f=>({...f,"목표 점수":e.target.value}))} placeholder="예: 900"/></div>
-            </div>
-            <div className="field"><label>Pass / Fail</label>
-              <select value={form["pass_fail"]} onChange={e=>setForm(f=>({...f,"pass_fail":e.target.value}))}>
-                {PASS_FAIL.map(p=><option key={p} value={p}>{p||"미정"}</option>)}
-              </select>
-            </div>
+          {isCert && <>
+            {/* 점수 토글 */}
+            <Toggle
+              checked={form["show_score"]}
+              onChange={v=>setForm(f=>({...f,"show_score":v}))}
+              label="점수 입력 사용"
+            />
+            {form["show_score"] && (
+              <div style={{background:'var(--surface2)',borderRadius:10,padding:'12px',marginBottom:12}}>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                  <div className="field" style={{marginBottom:0}}><label>현재 점수/등급</label><input value={form["현재 점수"]} onChange={e=>setForm(f=>({...f,"현재 점수":e.target.value}))} placeholder="예: 820"/></div>
+                  <div className="field" style={{marginBottom:0}}><label>목표 점수/등급</label><input value={form["목표 점수"]} onChange={e=>setForm(f=>({...f,"목표 점수":e.target.value}))} placeholder="예: 900"/></div>
+                </div>
+              </div>
+            )}
+
+            {/* Pass/Fail 토글 */}
+            <Toggle
+              checked={form["show_pf"]}
+              onChange={v=>setForm(f=>({...f,"show_pf":v}))}
+              label="Pass / Fail 사용"
+            />
+            {form["show_pf"] && (
+              <div style={{background:'var(--surface2)',borderRadius:10,padding:'12px',marginBottom:12}}>
+                <div style={{display:'flex',gap:10}}>
+                  {["Pass","Fail"].map(pf=>(
+                    <div key={pf} onClick={()=>setForm(f=>({...f,"pass_fail":pf}))} style={{
+                      flex:1,padding:'8px',borderRadius:8,cursor:'pointer',textAlign:'center',
+                      fontWeight:700,fontSize:13,border:'2px solid',transition:'all .15s',
+                      borderColor: form["pass_fail"]===pf ? (pf==="Pass"?"var(--success)":"var(--danger)") : "var(--border2)",
+                      background: form["pass_fail"]===pf ? (pf==="Pass"?"rgba(77,255,180,0.15)":"rgba(255,95,122,0.15)") : "transparent",
+                      color: form["pass_fail"]===pf ? (pf==="Pass"?"var(--success)":"var(--danger)") : "var(--muted)",
+                    }}>{pf}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="field">
               <label>만료일 (없으면 비워두기)</label>
               <input type="date" value={form["만료일"]} onChange={e=>setForm(f=>({...f,"만료일":e.target.value}))}/>
             </div>
           </>}
 
-          {isAward&&<>
+          {isAward && <>
             <div className="field"><label>수상 내용</label><input value={form["수상 내용"]} onChange={e=>setForm(f=>({...f,"수상 내용":e.target.value}))} placeholder="예: 최우수상 / 장려상 / 입선"/></div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
               <div className="field"><label>주최 기관</label><input value={form["주최 기관"]} onChange={e=>setForm(f=>({...f,"주최 기관":e.target.value}))} placeholder="예: 과기부"/></div>
